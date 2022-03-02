@@ -1,0 +1,123 @@
+<div class="row">
+    <div class="col-lg-6"><h3></h3></div>
+    <div class="col-lg-6 text-right">
+        <button class="btn btn-danger" onClick="delete_all_rules(1);">Delete All Warranty Rules</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <!-- <h3 class="box-title m-b-0">Warranty Rules</h3>
+            <p class="text-muted m-b-30">Detail of all warranty rules available</p>
+            <hr> -->
+            <div class="table-responsive">
+                <table cellspacing="0" class="display nowrap" id="dataTable" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Days</th>
+                        <th>Supplier</th>
+                        <th>Category</th>
+                        <th>Product</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Days</th>
+                        <th>Supplier</th>
+                        <th>Category</th>
+                        <th>Product</th>
+                        <th>Action</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for obj in warranty_rules %}
+                    <tr id="rule{{obj.rule_id}}">
+                        <td>{{obj.rule_id}}</td>
+                        <td><span id="warranty_days_static_{{obj.rule_id}}">{{obj.days}}</span>
+                            <input type="hidden" value="{{obj.days}}"  id="warranty_days_obj_{{obj.rule_id}}" /></td>
+                        <td>{{obj.supplier}}</td>
+                        <td>{{obj.category}}</td>
+                        <td>{{obj.product}}</td>
+                        <td>
+                            <button class="btn btn-primary" onClick="editWarrantyRule({{obj.rule_id}})">Edit</button>
+                            <button class="btn btn-warning" onClick="delete_rule({{obj.rule_id}})">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="warrantyviewerpopup" class="modal fade" id="warrantyviewerpopupedit" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document" style="max-width: 800px;">
+        <div class="modal-content" style="position: absolute;width: 800px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div id="warranty-cost-div">
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <h5 class="m-t-30 m-b-10">Select Days</h5>
+                             <select class="form-control" data-style="form-control" id="warranty_days" name="warranty_days" required>
+                                <option value="10">10 Days</option>
+                                <option value="30">30 Days</option>
+                                <option value="60">60 Days</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="error_div"></div>
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" type="button" onClick="submitWarranty()">Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+        function editWarrantyRule(rule_id){
+            element_id = 'warranty_days_obj_' + rule_id;
+            value_ = document.getElementById(element_id).value;
+            document.getElementById('warranty_days').value = value_;
+            document.getElementById('rule_identity').value = rule_id;
+            $('#warrantyviewerpopupedit').modal('show');
+        }
+
+        function submitWarranty(){
+            warranty_days = document.getElementById('warranty_days').value;
+            rule_identity = document.getElementById('rule_identity').value;
+
+            $.post("{% url 'products:edit_rule' %}",
+                {
+                    warranty_days: warranty_days,
+                    rule_identity: rule_identity,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+              function(data, status){
+                alert("edited");
+
+                element_id = 'warranty_days_obj_' + rule_identity;
+                element_id_static = 'warranty_days_static_' + rule_identity;
+                document.getElementById(element_id).value = warranty_days;
+                document.getElementById(element_id_static).textContent=warranty_days;
+                $('#warrantyviewerpopupedit').modal('toggle');
+            });
+        }
+</script>

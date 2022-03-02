@@ -1,0 +1,470 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+#dataTable tr td:nth-child(3){
+word-wrap: break-word;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+min-width: 50px !important;
+max-width: 50px !important;
+}
+
+{% endblock %}
+{% block bodyblock %}
+<style>
+
+
+#dataTable tr td:nth-child(3){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+
+#dataTable tr td:nth-child(4){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 300px !important;
+}
+
+
+#dataTable tr td:nth-child(5){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+             <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">Employees & Users Information</h3></div>
+                <div class="col-6 text-right"><a class="btn btn-primary" data-toggle="modal" data-target="#addNewUser">Add New User</a></div>
+            </div>
+            <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+            <div class="table-responsive">
+
+                {% for obj in messages %}
+                    <div class="error_div" style="color: red; font-size: 30px; text-align: center;">{{obj}}</div>
+                {% endfor %}
+
+
+                <div id="dataTableMain">
+                    <table id="dataTable" class="display nowrap competitorsList" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Sr #.</th>
+                            <th>Name</th>
+                            <th>Email Address</th>
+                            <th>Permissions</th>
+                            <th>Reset Password</th>
+                            <th>Delete User</th>
+                            <th>Edit Permissions</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Sr #.</th>
+                            <th>Name</th>
+                            <th>Email Address</th>
+                            <th>Permissions</th>
+                            <th>Reset Password</th>
+                            <th>Delete User</th>
+                            <th>Edit Permissions</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div aria-labelledby="exampleModalLabel2" class="modal fade" id="resetPassword" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Reset Password</h4></div>
+            <div class="modal-body">
+                <div>
+                    <input type="hidden" id="user_id" />
+                    <input type="text" id="passwordReset"  class="form-control"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="passwordResetSubmit()" type="button">Reset Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-labelledby="exampleModalLabel3" class="modal fade" id="updatePermissions" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute; width: 600px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel3">Reset Permissions</h4></div>
+            <div class="modal-body">
+                <div class="row">
+                    <h3>Change Permission Of User</h3>
+                </div>
+                    <div class="row">
+                    <label><input type="checkbox" id="home_page" /> Home Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" id="products_page" /> Products Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" id="competitors_page" /> Competitors Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" id="daily_price_page" /> Daily Price Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" id="active_link_page" /> Active Link Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" id="cron_job_page" /> Cron Logs Page Permission</label>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="updatePermissionsForm()" type="button">Update Permissions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel4" class="modal fade" id="addNewUser" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute; width: 600px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel4">Add New User</h4></div>
+            <div class="modal-body">
+                <div class="row">
+                    <h3>Add New User</h3>
+                </div>
+                <form method="POST" action="{% url 'products:add_new_user' %}">
+                    {% csrf_token %}
+                    <div class="row" style="margin-bottom: 10px;">
+                        <input type="text" name="name" required class="form-control" placeholder="Enter Name Of User"/>
+                        <br>
+                    </div>
+                     <div class="row" style="margin-bottom: 10px;">
+                        <input type="text" name="email_address" class="form-control" required placeholder="Enter Email Address Of User"/>
+                    </div>
+                     <div class="row">
+                        <input type="text" name="password" required class="form-control" placeholder="Enter Password Of User"/>
+                    </div>
+                    <div class="row">
+                    <label><input type="checkbox" name="is_home_page" /> Home Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" name="is_products_page" /> Products Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" name="is_competitors_page" /> Competitors Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" name="is_daily_price_page" /> Daily Price Page Permission</label>
+                    </div><div class="row">
+                    <label><input type="checkbox" name="is_active_links_page" /> Active Link Page Permission</label>
+                    </div><div class="row" style="margin-bottom: 20px;">
+                    <label><input type="checkbox" name="is_cron_job_logs_page" /> Cron Logs Page Permission</label>
+                    </div>
+                    <div class="row">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-success" type="submit">Add New User
+                </button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel1" class="modal fade" id="deleteUser" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to delete the user?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="deleteUserForm()" type="button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    #page-wrapper{
+        width: 100% !important;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        color: #298029!important;
+    }
+    .competitorsList .colorRedBackground {
+        color: #f89292!important;
+    }
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+<script>
+    getTableData();
+
+    function getTableData(){
+
+        $('#dataTable').DataTable({
+            dom: '<"top"B>rt<"bottom"lp><"clear">'
+            , buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[100, 200, 500, 1000], [100, 200, 500, 1000]],
+            "processing": true,
+            serverSide: true,
+            destroy: true,
+            ajax: {
+                // url: '{% url 'products:users_info' %}',
+                url: '/app/users_info',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "sr_no", "orderable": false},
+                { "data": "name", "orderable": false },
+                { "data": "email", "orderable": false },
+                 { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        return '<span id="permission_'+full.id+'">'+full.permissions+'</span>';
+                    }
+                },
+                { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        return '<button type="button" class="btn btn-primary" onClick="resetPass('+full.id+');">Reset Password</button>';
+                    }
+                },
+                { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        return '<button type="button" class="btn btn-danger" onClick="deleteUserFunc('+full.id+');">Delete User</button>';
+                    }
+                },
+                { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        return '<button type="button" class="btn btn-info" onClick="updatePermissionsFunc('+full.id+', '+full.is_home_page+', \
+                        '+full.is_products_page+', '+full.is_competitors_page+', '+full.is_daily_price_page+', \
+                        '+full.is_active_links_page+','+full.is_cron_job_logs_page+')">Change Permissions</button>';
+                    }
+                }
+            ]
+        });
+
+    };
+
+    function resetPass(user_id) {
+        $('#user_id').val(user_id);
+        $('#resetPassword').modal('show');
+    }
+
+    function passwordResetSubmit() {
+        pass_val = $('#passwordReset').val();
+        user_id = $('#user_id').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/app/reset_password",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ password: pass_val, id: user_id}),
+            dataType: "json",
+            success: function(data){
+                $('#resetPassword').modal('toggle');
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function deleteUserFunc(user_id) {
+        $('#user_id').val(user_id);
+        $('#deleteUser').modal('show');
+    }
+
+    function deleteUserForm() {
+        user_id = $('#user_id').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/app/delete_user",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ id: user_id}),
+            dataType: "json",
+            success: function(data){
+                $('#deleteUser').modal('toggle');
+                location.reload();
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function updatePermissionsFunc(user_id, is_home_page, is_products_page, is_competitors_page, is_daily_price_page, is_active_links_page, is_cron_job_logs_page) {
+        $('#user_id').val(user_id);
+        if (is_home_page === true){
+            $('#home_page').prop ('checked',true);
+        }
+        if (is_products_page === true){
+            $('#products_page').prop ('checked',true);
+        }
+        if (is_competitors_page === true){
+            $('#competitors_page').prop ('checked',true);
+        }
+        if (is_daily_price_page === true){
+            $('#daily_price_page').prop ('checked',true);
+        }
+        if (is_active_links_page === true){
+            $('#active_link_page').prop ('checked',true);
+        }
+        if (is_cron_job_logs_page === true){
+            $('#cron_job_page').prop ('checked',true);
+        }
+        $('#updatePermissions').modal('show');
+    }
+
+    function updatePermissionsForm() {
+        user_id = $('#user_id').val();
+        permission_id = '#permission_' + user_id;
+        home_page = false;
+        products_page = false;
+        competitors_page = false;
+        daily_price_page = false;
+        active_link_page = false;
+        cron_job_page = false;
+
+        if($("#home_page").is(':checked'))
+            home_page = true;
+        if($("#products_page").is(':checked'))
+            products_page = true;
+        if($("#competitors_page").is(':checked'))
+            competitors_page = true;
+        if($("#is_daily_price_page").is(':checked'))
+            daily_price_page = true;
+        if($("#active_link_page").is(':checked'))
+            active_link_page = true;
+        if($("#cron_job_page").is(':checked'))
+            cron_job_page = true;
+
+        $.ajax({
+            type: "POST",
+            url: "/app/update_permission_of_user",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ id: user_id, is_home_page: home_page, is_products_page: products_page, is_competitors_page: competitors_page,
+                is_daily_price_page: daily_price_page, is_active_links_page: active_link_page, is_cron_job_logs_page: cron_job_page}),
+            dataType: "json",
+            success: function(data){
+                $(permission_id).html(data.permissions);
+                $('#updatePermissions').modal('toggle');
+                location.reload();
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+</script>
+
+
+{% endblock %}

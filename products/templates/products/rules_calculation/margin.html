@@ -1,0 +1,148 @@
+<div id="margin-div" style="display: none">
+    <div class="row">
+        <div class="form-group col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Select Margin Type</h5>
+            <select class="selectpicker" data-style="form-control" id="margin_type" name="margin_type">
+                <option value="0">Whole Sale Price</option>
+                <option value="1">Retail Price</option>
+            </select>
+        </div>
+        <div class="col-1 col-md-1">
+            <h5 class="m-t-30 m-b-10">Set Percentage</h5>
+            <div class="input-group">
+                <input class="form-control" id="margin_price" name="margin_price" placeholder="Percentage"
+                       type="text" step="0.01">
+            </div>
+        </div>
+
+          <div class="form-group col-1 col-md-1">
+            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+            <select class="selectpicker" data-style="form-control" name="margin_price_unit">
+                <option value="1" selected>RON</option>
+                <option value="2">Percent</option>
+            </select>
+        </div>
+
+
+        <div class="form-group col-3 col-md-3">
+            <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+            <select class="selectpicker" data-style="form-control" id="margin_supplier"
+                    name="margin_supplier">
+                <option disabled selected>Select</option>
+                <option value="0">All Suppliers</option>
+                {% for obj in suppliers %}
+                <option value="{{obj.id}}">{{obj.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Association With</h5>
+            <select class="selectpicker" data-style="form-control" id="margin_asscoiation_check">
+                <option disabled selected> select</option>
+                <!-- <option value="0">Select Association</option> -->
+                <option value="1">Category</option>
+                <option value="2">Product</option>
+            </select>
+        </div>
+
+        <div class="col-lg-3 col-md-3" id="margin_category_div" style="display: none">
+            <h5 class="m-t-30 m-b-10">With Category</h5>
+            <input id="margin_category_submit" name="margin_category" type="hidden"/>
+            <select class="select2 m-b-10 select2-multiple" data-placeholder="Choose" id="margin_category" multiple>
+                <option value="0">All Categories</option>
+                {% for obj in categories %}
+                <option value="{{obj.id}}">{{obj.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-3" id="margin_product_div" style="display: none">
+            <h5 class="m-t-30 m-b-10">With Product</h5>
+            <div class="input-group">
+                <input class="form-control" id="margin_product_sku" name="margin_product_sku" placeholder="Enter Product SKU"
+                       type="text">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Dynamic Margin Percentage</h5>
+            <div class="input-group">
+                <input class="form-control" name="margin_price2" placeholder="Enter Percentage"
+                       type="text" step="0.01" value="0">
+            </div>
+        </div>
+
+          <div class="form-group col-1 col-md-1">
+            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+            <select class="selectpicker" data-style="form-control" name="margin_price_unit2">
+                <option value="1" selected>RON</option>
+                <option value="2">Percent</option>
+            </select>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">If Supplier Price is Lower Than</h5>
+            <div class="input-group">
+                <input class="form-control" disabled type="text" value="If Supplier Price is Lower Than">
+            </div>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Price</h5>
+            <div class="input-group">
+                <input class="form-control" placeholder="Enter Price"
+                       type="text" step="0.01" value="0" name="price_dependancy">
+                <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+            </div>
+        </div>
+
+        <div class="col-5 col-md-5"></div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Dynamic Margin Percentage</h5>
+            <div class="input-group">
+                <input class="form-control" id="margin_price3" name="margin_price3" placeholder="Enter Percentage"
+                       type="text" step="0.01" value="0">
+            </div>
+        </div>
+
+          <div class="form-group col-1 col-md-1">
+            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+            <select class="selectpicker" data-style="form-control" name="margin_price_unit3">
+                <option value="1" selected>RON</option>
+                <option value="2">Percent</option>
+            </select>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">If Supplier Price is Higher Than</h5>
+            <div class="input-group">
+                <input class="form-control" disabled type="text" value="If Supplier Price is Higher Than">
+            </div>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <h5 class="m-t-30 m-b-10">Price</h5>
+            <div class="input-group">
+                <input class="form-control" placeholder="Enter Price"
+                       type="text" step="0.01" name="price_dependancy2">
+                <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+            </div>
+        </div>
+
+        <div class="col-5 col-md-5"></div>
+
+    </div>
+
+
+    <div class="row">
+
+    </div>
+
+</div>

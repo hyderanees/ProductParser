@@ -1,0 +1,881 @@
+{% extends 'products/base.html' %} {% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet"
+      type="text/css"/>
+
+<link href="{% static 'plugins/bower_components/custom-select/custom-select.css' %}" rel="stylesheet" type="text/css"/>
+<link href="{% static 'plugins/bower_components/switchery/dist/switchery.min.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css' %}"
+      rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/multiselect/css/multi-select.css' %}" rel="stylesheet" type="text/css"/>
+<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bower_components/typeahead.js-master/dist/typehead-min.css' %}"
+      rel="stylesheet"> {% endblock %} {% block stylesheet %} .select2-container-multi .select2-choices .select2-search-choice { padding: 4px 7px 4px 18px; margin: 5px 0 3px 5px; color: #555555; background: #f5f5f5; border-color: rgba(120,130,140,0.13); -webkit-box-shadow:
+none; box-shadow: none; } .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) { width: 100% !important; } {% endblock %} {% block bodyblock %}
+<style>
+    #invalid {
+        /* color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        position: fixed;
+        top: .5em;
+        right: .5em;
+        background: rgb(253, 100, 100);
+        padding: 1em 4em;
+        border-radius: 2em; */
+    }
+
+
+    .competitorsclasss {
+        margin-bottom: 10px;
+    }
+
+    .product_details_view_fetch_row {
+        margin-top: 20px;
+    }
+
+
+    .competitorsListNew td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsListNew th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+
+    .competitorsList td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        background: #298029!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedBackground {
+        background: #ff0000!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+
+    .btn_background {
+        background-color: #216c5a !important;
+    }
+    .btn_background:hover {
+        background-color: #216c5a !important;
+    }
+    #page-wrapper{
+        width: 100% !important;
+    }
+     .dark-heading {
+        color: black;
+        font-weight: 500;
+        font-size: 1.4em!important;
+    }
+
+    .nav-pills .nav-item.show .nav-link, .nav-pills .nav-link.active {
+        background: #fedd00;
+    }
+
+</style>
+<div class="white-box">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-6 col-md-6"><h3 class="box-title m-b-0  dark-heading">Rules Addition Page</h3></div>
+                <div class="col-6 col-md-6 text-right"><button class="btn btn-default" id="add-rule-button">Add Rule</button></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row" id="rule-add-body" style="display:none;">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h3 class="box-title m-b-0">Select Rule Type</h3>
+            <!-- action="{% url 'products:add_rules' %}" -->
+            <!-- method="POST" -->
+            <select class="" data-style="form-control" id="rule-type">
+                <option disabled selected>Select Rule Type</option>
+                <option value="1">Set Warranty</option>
+                <option value="2">Set VAT</option>
+                <option value="3">Set Margin</option>
+                <option value="4">Set Local Cost Supplier</option>
+                <option value="5">Set Thenx Cost Supplier</option>
+                <option value="6">Set Price Competitor Rule</option>
+            </select>
+            <form action="{% url 'products:add_rules' %}" data-toggle="validator" enctype="multipart/form-data"
+                  id="myForm"
+                  method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input id="rule_type_submit" name="rule_type" type="hidden"/>
+
+                </div>
+
+                {% include 'products/rules_calculation/local_cost_supplier.html' %}
+                {% include 'products/rules_calculation/thenx_cost_supplier.html' %}
+                {% include 'products/rules_calculation/warranty.html' %}
+                {% include 'products/rules_calculation/vat.html' %}
+                {% include 'products/rules_calculation/margin.html' %}
+                {% include 'products/rules_calculation/competitor_rule.html' %}
+
+
+                <div class="row text-center" id="button-div" style="justify-content: flex-end;display:none">
+                    <div class="text-right">
+                        <button class="btn btn-block btn-success btn-rounded" id="btnSave" type="submit">Save
+                            Information
+                        </button>
+                    </div>
+                </div>
+                <span id="invalid" style="color: red"></span>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row"  style="margin-bottom: 20px;">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h3 class="box-title m-b-0">CSV Files for all type of rules</h3>
+
+                <table class="display nowrap dataTable competitorsList" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Sr#</th>
+                        <th>Rule Type</th>
+                        <th>Download CSV File</th>
+                        <th>Upload CSV File</th>
+                        <th>Export CSV File</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Local Cost Rules</td>
+                        <td><input type="button" value="Download Local Cost Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/download_csv_file?rule_type=1")'></td>
+                        <td>
+                            <form method="POST" enctype="multipart/form-data" style="display: inline-flex"
+                            action="/app/add_rules_csv?rule_type=1"
+                            >
+                                {% csrf_token %}
+                                <input name="file"  type="file" required  accept="csv"/>
+                                <button class="btn btn-default" type="submit">Upload</button>
+                            </form>
+                        </td>
+                        <td><input type="button" value="Export Local Cost Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/export_csv_file?rule_type=4")'></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Thex Cost Rules</td>
+                        <td><input type="button" value="Download Thenx Cost Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/download_csv_file?rule_type=2")'></td>
+                        <td>
+                            <form method="POST" enctype="multipart/form-data" style="display: inline-flex"
+                            action="/app/add_rules_csv?rule_type=2"
+                            >
+                                {% csrf_token %}
+                                <input name="file"  type="file" required  accept="csv"/>
+                                <button class="btn btn-default" type="submit">Upload</button>
+                            </form>
+                        </td>
+
+                        <td><input type="button" value="Export Thenx Cost Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/export_csv_file?rule_type=5")'></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Margin Rule</td>
+                        <td><input type="button" value="Download Margin Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/download_csv_file?rule_type=3")'></td>
+                         <td>
+                            <form method="POST" enctype="multipart/form-data" style="display: inline-flex"
+                            action="/app/add_rules_csv?rule_type=3"
+                            >
+                                {% csrf_token %}
+                                <input name="file"  type="file" required  accept="csv"/>
+                                <button class="btn btn-default" type="submit">Upload</button>
+                            </form>
+                        </td>
+
+                        <td><input type="button" value="Export Margins Rule"
+                                   class="btn btn-primary btn_background"
+                                   onclick='window.open("/app/export_csv_file?rule_type=3")'></td>
+                    </tr>
+<!--                    <tr>-->
+<!--                        <td>4</td>-->
+<!--                        <td>Competitor Rule</td>-->
+<!--                        <td><input type="button" value="Download Competitor Rule"-->
+<!--                                   class="btn btn-primary btn_background"-->
+<!--                                   onclick='window.open("/app/download_csv_file?rule_type=4")'></td>-->
+<!--                         <td>-->
+<!--&lt;!&ndash;                            <form method="POST" enctype="multipart/form-data" style="display: inline-flex"&ndash;&gt;-->
+<!--&lt;!&ndash;                            action="/app/add_rules_csv?rule_type=4"&ndash;&gt;-->
+<!--&lt;!&ndash;                            >&ndash;&gt;-->
+<!--&lt;!&ndash;                                {% csrf_token %}&ndash;&gt;-->
+<!--&lt;!&ndash;                                <input name="file"  type="file" required  accept="csv"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <button class="btn btn-default" type="submit">Upload</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </form>&ndash;&gt;-->
+<!--                        </td>-->
+<!--                    </tr>-->
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Sr#</th>
+                        <th>Rule Type</th>
+                        <th>Download CSV File</th>
+                        <th>Upload CSV File</th>
+                        <th>Export CSV File</th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %} {% block javascript %}
+
+<script src="{% static 'js/custom.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/switchery/dist/switchery.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/custom-select/custom-select.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/multiselect/js/jquery.multi-select.js' %}"
+        type="text/javascript"></script>
+
+<script src="{% static 'plugins/bower_components/typeahead.js-master/dist/typeahead.bundle.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/typeahead.js-master/dist/typeahead-init.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@v2.3.7/dist/latest/bootstrap-autocomplete.min.js"></script>
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+
+<script>
+    jQuery(document).ready(function() {
+        // Switchery
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+        $('.js-switch').each(function() {
+            new Switchery($(this)[0], $(this).data());
+        });
+        // For select 2
+        $(".select2").select2();
+        $('.selectpicker').selectpicker();
+        //Bootstrap-TouchSpin
+        $(".vertical-spin").TouchSpin({
+            verticalbuttons: true,
+            verticalupclass: 'ti-plus',
+            verticaldownclass: 'ti-minus'
+        });
+        var vspinTrue = $(".vertical-spin").TouchSpin({
+            verticalbuttons: true
+        });
+        if (vspinTrue) {
+            $('.vertical-spin').prev('.bootstrap-touchspin-prefix').remove();
+        }
+        $("input[name='tch1']").TouchSpin({
+            min: 0,
+            max: 100,
+            step: 0.1,
+            decimals: 2,
+            boostat: 5,
+            maxboostedstep: 10,
+            postfix: '%'
+        });
+        $("input[name='tch2']").TouchSpin({
+            min: -1000000000,
+            max: 1000000000,
+            stepinterval: 50,
+            maxboostedstep: 10000000,
+            prefix: '$'
+        });
+        $("input[name='tch3']").TouchSpin();
+        $("input[name='tch3_22']").TouchSpin({
+            initval: 40
+        });
+        $("input[name='tch5']").TouchSpin({
+            prefix: "pre",
+            postfix: "post"
+        });
+        // For multiselect
+        $('#pre-selected-options').multiSelect();
+        $('#optgroup').multiSelect({
+            selectableOptgroup: true
+        });
+        $('#public-methods').multiSelect();
+        $('#select-all').click(function() {
+            $('#public-methods').multiSelect('select_all');
+            return false;
+        });
+        $('#deselect-all').click(function() {
+            $('#public-methods').multiSelect('deselect_all');
+            return false;
+        });
+        $('#refresh').on('click', function() {
+            $('#public-methods').multiSelect('refresh');
+            return false;
+        });
+        $('#add-option').on('click', function() {
+            $('#public-methods').multiSelect('addOption', {
+                value: 42,
+                text: 'test 42',
+                index: 0
+            });
+            return false;
+        });
+
+        $('form').submit(function(e) {
+            valueSelected =  $('#rule_type_submit').val();
+
+            if (valueSelected == 1){
+                $('#rule_type_submit').val(1);
+                var warranty_days = $('#warranty_days').val()
+                var warranty_suppliers = $('#warranty_suppliers').val()
+                var warranty_association_check = $('#warranty_association_check').val()
+                var warranty_category = $('#warranty_category').val()
+                var warranty_product_sku = $('#warranty_product_sku').val()
+                if (warranty_days == null) {
+                    $('#invalid').html('Days Required').show().fadeOut(3000)
+                    return false
+                } else if (warranty_suppliers == null) {
+                    $('#invalid').html('Suppliers Required').show().fadeOut(3000)
+                    return false
+                } else if (warranty_association_check == null) {
+                    $('#invalid').html('Association Required').show().fadeOut(3000)
+
+                    return false
+                }
+                else {
+                    if (warranty_association_check == 1) {
+                        if (warranty_category == null) {
+                            $('#invalid').html('Category Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            $('#warranty_category_submit').val(warranty_category);
+                            return true
+                        }
+                    } else if (warranty_association_check == 2) {
+                        if (warranty_product_sku == null || warranty_product_sku == '') {
+                            $('#invalid').html('Product SKU Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+
+            if (valueSelected == 2) {
+                $('#rule_type_submit').val(2);
+                // $('#invalid').empty()
+                var vat_price = $('#vat_price').val();
+                if (vat_price == null || vat_price == '') {
+                    $('#invalid').html('Vat Price required').show().fadeOut(3000)
+                    return false
+                } else {
+                    return true
+                }
+            }
+
+            if (valueSelected == 3) {
+                $('#rule_type_submit').val(3);
+                var margin_type = $('#margin_type').val()
+                var margin_price = $('#margin_price').val()
+                var margin_supplier = $('#margin_supplier').val()
+                var margin_asscoiation_check = $('#margin_asscoiation_check').val()
+                var margin_category = $('#margin_category').val()
+                var margin_product_sku = $('#margin_product_sku').val()
+                if (margin_type == '' || margin_type == null) {
+                    $('#invalid').html('Margin Type Required').show().fadeOut(3000)
+                    return false
+                } else if (margin_price == null || margin_price == '') {
+                    $('#invalid').html('Margin Price Required').show().fadeOut(3000)
+                    return false
+                } else if (margin_supplier == null || margin_supplier == '') {
+                    $('#invalid').html('Margin Supplier required').show().fadeOut(3000)
+                    return false
+                } else if (margin_asscoiation_check == null) {
+                    $('#invalid').html('Association Required').show().fadeOut(3000)
+                    return false
+                }
+                 else {
+                    if (margin_asscoiation_check == 1) {
+                        if (margin_category == null) {
+                            $('#invalid').html('Category Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            $('#margin_category_submit').val(margin_category);
+                            return true
+                        }
+                    } else if (margin_asscoiation_check == 2) {
+                        if (margin_product_sku == null || margin_product_sku == '') {
+                            $('#invalid').html('Product SKU Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+
+            if (valueSelected == 4) {
+                $('#rule_type_submit').val(4);
+                var local_cost_price = $('#local_cost_price').val()
+                var local_cost_price_competitor = $('#local_cost_supplier_linker_original').val()
+                var local_cost_price_percentage = $('#local_cost_price_percentage').val()
+                var local_cost_association_check = $('#local_cost_association_check').val()
+                var local_cost_category = $('#local_cost_category').val()
+                var local_cost_product_sku = $('#local_cost_product_sku').val()
+                var local_cost_supplier_select = $('#local_cost_supplier_select').val()
+                if (local_cost_price == '' || local_cost_price == null) {
+                    $('#invalid').html('Local Cost Price Required').show().fadeOut(3000)
+                    return false
+                } else if (local_cost_price_competitor == null || local_cost_price_competitor == '') {
+                    $('#invalid').html('Local Cost Price Competitor Required').show().fadeOut(3000)
+                    return false
+                } else if (local_cost_price_percentage == null || local_cost_price_percentage == '') {
+                    $('#invalid').html('Local Cost Price percentage required').show().fadeOut(3000)
+                    return false
+                }
+                else if (local_cost_supplier_select == null) {
+                        $('#invalid').html('Suppliers Required').show().fadeOut(3000)
+                        return false
+                }
+                else if (local_cost_price_percentage == null || local_cost_price_percentage == '') {
+                    $('#invalid').html('Local Cost Price percentage required').show().fadeOut(3000)
+                    return false
+                }
+                else if (local_cost_association_check == null) {
+                    $('#invalid').html('Association Required').show().fadeOut(3000)
+
+                    return false
+                } else {
+                    if (local_cost_association_check == 1) {
+                        if (local_cost_category == null) {
+                            $('#invalid').html('Category Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            $('#local_cost_category_submit').val(local_cost_category);
+                            return true
+                        }
+                    } else if (local_cost_association_check == 2) {
+                        if (local_cost_product_sku == null || local_cost_product_sku == '') {
+                            $('#invalid').html('Product SKU Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+
+            if (valueSelected == 5) {
+                $('#rule_type_submit').val(5);
+
+                var thenx_cost_price = $('#thenx_cost_price').val()
+                var thenx_cost_price_competitor = $('#thenx_cost_supplier_linker_original').val()
+                var thenx_cost_price_percentage = $('#thenx_cost_price_percentage').val()
+
+                var thenx_cost_association_check = $('#thenx_cost_association_check').val()
+                var thenx_cost_category = $('#thenx_cost_category').val()
+                var thenx_cost_product_sku = $('#thenx_cost_product_sku').val()
+                var thenx_cost_supplier_select = $('#thenx_cost_supplier_select').val()
+
+                if (thenx_cost_price == '' || thenx_cost_price == null) {
+                    $('#invalid').html('Thenx Cost Price Required').show().fadeOut(3000)
+                    return false
+                } else if (thenx_cost_price_competitor == null || thenx_cost_price_competitor == '') {
+                    $('#invalid').html('Thenx Cost Price Competitor Required').show().fadeOut(3000)
+                    return false
+                } else if (thenx_cost_price_percentage == null || thenx_cost_price_percentage == '') {
+                    $('#invalid').html('Thenx Cost Price percentage required').show().fadeOut(3000)
+                    return false
+                }
+                else if (thenx_cost_supplier_select == null) {
+                        $('#invalid').html('Suppliers Required').show().fadeOut(3000)
+                        return false
+                }
+                else if (thenx_cost_price_percentage == null || thenx_cost_price_percentage == '') {
+                    $('#invalid').html('Local Cost Price percentage required').show().fadeOut(3000)
+                    return false
+                }
+                else if (thenx_cost_association_check == null) {
+                    $('#invalid').html('Association Required').show().fadeOut(3000)
+
+                    return false
+                } else {
+                    if (thenx_cost_association_check == 1) {
+                        if (thenx_cost_category == null) {
+                            $('#invalid').html('Category Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            $('#thenx_cost_category_submit').val(thenx_cost_category);
+                            return true
+                        }
+                    } else if (thenx_cost_association_check == 2) {
+                        if (thenx_cost_product_sku == null || thenx_cost_product_sku == '') {
+                            $('#invalid').html('Product SKU Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+
+            if (valueSelected == 6) {
+                $('#rule_type_submit').val(6);
+
+                var competitor_price = $('#competitor_price').val()
+                var competitor_price_type = $('#competitor_price_type').val()
+
+                var competitor_price_first_priority = $('#competitor_price_first_priority').val()
+                var competitor_price_second_priority = $('#competitor_price_second_priority').val()
+
+                var competitor_competitor_select = $('#competitor_competitor_select').val()
+                var competitor_cost = $('#competitor_cost').val()
+                var competitor_cost_type = $('#competitor_cost_type').val()
+
+                var competitor_supplier = $('#competitor_supplier').val()
+                var competitor_asscoiation_check = $('#competitor_asscoiation_check').val()
+                var competitor_category = $('#competitor_category').val()
+                var competitor_product_sku = $('#competitor_product_sku').val()
+
+
+                if (competitor_price == '' || competitor_price == null) {
+                    $('#invalid').html('First Price is required').show().fadeOut(3000)
+                    return false
+                } else if (competitor_price_type == null || competitor_price_type == '') {
+                    $('#invalid').html('Select First Price Unit').show().fadeOut(3000)
+                    return false
+                } else if (competitor_price_first_priority == null || competitor_price_first_priority == '') {
+                    $('#invalid').html('Select first Price Priority').show().fadeOut(3000)
+                    return false
+                }else if (competitor_price_second_priority == null || competitor_price_second_priority == '') {
+                    $('#invalid').html('Select second Price Priority').show().fadeOut(3000)
+                    return false
+                }
+                else if (competitor_competitor_select == null || competitor_competitor_select == '') {
+                    $('#invalid').html('Select competitor').show().fadeOut(3000)
+                    return false
+                }
+                else if (competitor_cost == null || competitor_cost == '') {
+                    $('#invalid').html('Type second price').show().fadeOut(3000)
+                    return false
+                }
+                else if (competitor_cost_type == null || competitor_cost_type == '') {
+                    $('#invalid').html('Select second price unit').show().fadeOut(3000)
+                    return false
+                }
+                else if (competitor_supplier == null) {
+                    $('#invalid').html('Supplier Required').show().fadeOut(3000)
+                    return false
+                }
+                else if (competitor_asscoiation_check == null) {
+                    $('#invalid').html('Association Required').show().fadeOut(3000)
+                    return false
+                }
+                 else {
+                    if (competitor_asscoiation_check == 1) {
+                        if (competitor_category == null) {
+                            $('#invalid').html('Category Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            $('#competitor_category_submit').val(competitor_category);
+                            return true
+                        }
+                    } else if (competitor_asscoiation_check == 2) {
+                        if (competitor_product_sku == null || competitor_product_sku == '') {
+                            $('#invalid').html('Product SKU Required').show().fadeOut(3000)
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+        })
+
+        $('#rule-type').on('change', function(e) {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            if (valueSelected != 0) {
+                $('#rule_type_submit').val(valueSelected);
+            }
+            if (valueSelected == 0) {
+                $('#warranty-div').css('display', 'none');
+                $('#button-div').css('display', 'none');
+                $('#vat-div').css('display', 'none');
+                $('#margin-div').css('display', 'none');
+                $('#local-cost-div').css('display', 'none');
+                $('#thenx-cost-div').css('display', 'none');
+                $('#competitor-rule-div').css('display', 'none');
+            }
+            if (valueSelected == 1) {
+                $('form').trigger("reset");
+                $('#warranty-div').show();
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').hide();
+                $('#margin-div').hide();
+                $('#local-cost-div').hide();
+                $('#thenx-cost-div').hide();
+                $('#competitor-rule-div').hide();
+            }
+            if (valueSelected == 2) {
+                $('form').trigger("reset");
+                $('#warranty-div').hide();
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').show();
+                $('#margin-div').dele;
+                $('#local-cost-div').hide();
+                $('#thenx-cost-div').hide();
+                $('#competitor-rule-div').hide();
+            }
+            if (valueSelected == 3) {
+                $('form').trigger("reset");
+                $('#warranty-div').css('display', 'none');
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').css('display', 'none');
+                $('#margin-div').css('display', 'block');
+                $('#local-cost-div').css('display', 'none');
+                $('#thenx-cost-div').css('display', 'none');
+                $('#competitor-rule-div').hide();
+            }
+            if (valueSelected == 4) {
+                $('form').trigger("reset");
+                $('#warranty-div').css('display', 'none');
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').css('display', 'none');
+                $('#margin-div').css('display', 'none');
+                $('#local-cost-div').css('display', 'block');
+                $('#thenx-cost-div').css('display', 'none');
+                $('#competitor-rule-div').hide();
+            }
+            if (valueSelected == 5) {
+                $('form').trigger("reset");
+                $('#warranty-div').css('display', 'none');
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').css('display', 'none');
+                $('#margin-div').css('display', 'none');
+                $('#local-cost-div').css('display', 'none');
+                $('#thenx-cost-div').css('display', 'block');
+                $('#competitor-rule-div').hide();
+            }
+            if (valueSelected == 6) {
+                $('form').trigger("reset");
+                $('#warranty-div').css('display', 'none');
+                $('#button-div').css('display', 'flex');
+                $('#vat-div').css('display', 'none');
+                $('#margin-div').css('display', 'none');
+                $('#local-cost-div').css('display', 'none');
+                $('#thenx-cost-div').css('display', 'none');
+                $('#competitor-rule-div').css('display', 'block');
+            }
+            $('#myForm .selectpicker').selectpicker('refresh');
+        });
+
+        $("#add-rule-button").click(function() {
+            $("#rule-add-body").css('display', 'block');
+            $('#rule-type').selectpicker();
+        });
+    });
+
+    $('#competitor_category').on('change', function(e){
+        competitor_category = $('#competitor_category').val();
+        $('#competitor_category_submit').val(competitor_category);
+    });
+
+    $('#margin_category').on('change', function(e){
+        margin_category = $('#margin_category').val();
+        $('#margin_category_submit').val(margin_category);
+    });
+
+    $('#local_cost_category').on('change', function(e){
+        local_cost_category = $('#local_cost_category').val();
+        $('#local_cost_category_submit').val(local_cost_category);
+    });
+
+    $('#thenx_cost_category').on('change', function(e){
+        thenx_cost_category = $('#thenx_cost_category').val();
+        $('#thenx_cost_category_submit').val(thenx_cost_category);
+    });
+
+    $('#warranty_association_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#warranty_category_div').css('display', 'none');
+            $('#warranty_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#warranty_category_div').css('display', 'block');
+            $('#warranty_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#warranty_category_div').css('display', 'none');
+            $('#warranty_product_div').css('display', 'block');
+        }
+    });
+    $('#margin_association_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#margin_category_div').css('display', 'none');
+            $('#margin_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#margin_category_div').css('display', 'block');
+            $('#margin_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#margin_category_div').css('display', 'none');
+            $('#margin_product_div').css('display', 'block');
+        }
+    });
+    $('#local_cost_association_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#local_cost_category_div').css('display', 'none');
+            $('#local_cost_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#local_cost_category_div').css('display', 'block');
+            $('#local_cost_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#local_cost_category_div').css('display', 'none');
+            $('#local_cost_product_div').css('display', 'block');
+        }
+    });
+    $('#thenx_cost_association_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#thenx_cost_category_div').css('display', 'none');
+            $('#thenx_cost_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#thenx_cost_category_div').css('display', 'block');
+            $('#thenx_cost_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#thenx_cost_category_div').css('display', 'none');
+            $('#thenx_cost_product_div').css('display', 'block');
+        }
+    });
+    $('#competitor_asscoiation_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#competitor_category_div').css('display', 'none');
+            $('#competitor_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#competitor_category_div').css('display', 'block');
+            $('#competitor_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#competitor_category_div').css('display', 'none');
+            $('#competitor_product_div').css('display', 'block');
+        }
+    });
+    $('#margin_asscoiation_check').on('change', function(e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == 0) {
+            $('#margin_category_div').css('display', 'none');
+            $('#margin_product_div').css('display', 'none');
+        }
+        if (valueSelected == 1) {
+            $('#margin_category_div').css('display', 'block');
+            $('#margin_product_div').css('display', 'none');
+        }
+        if (valueSelected == 2) {
+            $('#margin_category_div').css('display', 'none');
+            $('#margin_product_div').css('display', 'block');
+        }
+    });
+    $('#local_cost_supplier_linker_original').change(function() {
+        var value = $(this).val();
+        $('#local_cost_supplier_linker').val(value);
+    });
+    $('#thenx_cost_supplier_linker_original').change(function() {
+        var value = $(this).val();
+        $('#thenx_cost_supplier_linker').val(value);
+    });
+    $('#margin_linker').change(function() {
+        var value = $(this).val();
+        $('#margin_linker_value').val(value);
+    });
+    $('.basicAutoComplete').autoComplete({
+        resolverSettings: {
+            url: '{% url 'products:products_sku' %}'
+        }
+    });
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+    background: #03a9f3 !important;
+    color: #ffffff !important;
+    border-color: #03a9f3 !important;
+{% endblock %}
+{% block bodyblock %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="white-box">
+                <h3 class="box-title m-b-0">All Brands</h3>
+                <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+                <div class="table-responsive">
+                    <table id="dataTable" class="display nowrap" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Reference ID</th>
+                                <th>Total Products</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Reference ID</th>
+                                <th>Total Products</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+    <!-- start - This is for export functionality only -->
+    <script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+    <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+    <!-- end - This is for export functionality only -->
+    <script>
+        $('#dataTable').DataTable({
+            dom: '<"top"Bf>rt<"bottom"lp><"clear">'
+            , buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            "processing": true,
+            serverSide: true,
+            ajax: {
+                url: '{% url 'products:brands' %}',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "name", "orderable": false },
+                { "data": "reference_id", "orderable": false },
+                { "data": "total_products", "orderable": false }
+            ]
+        });
+    </script>
+{% endblock %}

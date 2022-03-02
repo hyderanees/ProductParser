@@ -1,0 +1,444 @@
+<!--<div class="row">-->
+<!--    <div class="col-sm-12">-->
+<!--        <div class="white-box">-->
+<!--            <div class="row">-->
+<!--                <div class="col-lg-6"><h3 class="box-title m-b-0">Calculating Price OF Product</h3></div>-->
+<!--                <div class="col-lg-6 text-right">-->
+<!--                    <button class="btn btn-info" onClick="detail_view()">View Detail</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <hr>-->
+<!--            <div class="detail_view" style="display:none">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Product Cost</b></h5>-->
+<!--                                <span class="price-digit">{{product.cost}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span><i class="fa fa-plus"></i></span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Local Cost Supplier</b></h5>-->
+<!--                                <span class="price-digit">{{ pro.local_cost|floatformat:2 }} <i-->
+<!--                                        class="fa fa-dollar"></i></span>-->
+<!--                            <span class="p-badge">-->
+<!--                                {% if pro.local_cost_is == True %}{{pro.local_cost_param_value}} Cost{% endif %}-->
+<!--                                    {% if pro.local_cost_is == False %}{{pro.local_cost_param_value}} Percentage{% endif %}-->
+<!--                                    {% if pro.local_cost_is == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span><i class="fa fa-plus"></i></span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Thenx Cost Supplier</b></h5>-->
+<!--                                <span class="price-digit">{{ pro.thenx_cost|floatformat:2 }}<i class="fa fa-dollar"></i></span>-->
+<!--                            <span class="p-badge">{% if pro.thenx_cost_is == True %}{{pro.thenx_cost_param_value}} Cost{% endif %} {% if pro.thenx_cost_is == False %}{{pro.thenx_cost_param_value}} Percentage{% endif %} {% if pro.thenx_cost_is == 'N/A' %}N/A{% endif %}</span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span><i class="fa fa-times"></i></span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="digit">1.19</span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{ pro.all_cost_price|floatformat:2 }} <i-->
+<!--                                    class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <hr>-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Whole Sale Margin</b></h5>-->
+<!--                                <span class="price-digit">{{pro.whole_sale_margin}}-->
+<!--                                    {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                    {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                    {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="ml-4"><i class="fa fa-times"></i></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Whole Sale Price</b></h5>-->
+<!--                            <span class="price-digit">{{ pro.whole_sale }} <i-->
+<!--                                    class="fa fa-long-arrow-right"></i> {{pro.whole_sale_rounded}}-->
+<!--                                <i class="fa fa-dollar"></i>-->
+<!--                                {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Whole Sale Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.whole_sale}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.whole_sale_rounded}}-->
+<!--                                    {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="ml-4"><i class="fa fa-minus"></i></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price|floatformat:2}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Gross Profit Whole Sale</b></h5>-->
+<!--                            <span class="price-digit">{{pro.gross_profit_whole_sale}}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Whole Sale Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.whole_sale}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.whole_sale_rounded}}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="ml-4"><i class="fa fa-minus"></i></span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price|floatformat:2}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="ml-4"><strong>/</strong></span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>Whole Sale Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.whole_sale}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.whole_sale_rounded}}-->
+<!--                                    {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>Gross Profit Whole Sale Margin</b></h5>-->
+<!--                            <span class="price-digit">{{pro.margin_whole_sale}}-->
+<!--                                {% if pro.whole_sale_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.whole_sale_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <hr>-->
+
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Retail Price Margin</b></h5>-->
+<!--                                <span class="price-digit">{{pro.retail_price_margin}}-->
+<!--                                    {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="ml-4"><i class="fa fa-times"></i></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Retail Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.retail_price}} <i-->
+<!--                                    class="fa fa-long-arrow-right"></i> {{pro.retail_price_rounded}}-->
+<!--                                {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Retail Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.retail_price}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.retail_price_rounded}}-->
+<!--                                    {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="ml-4"><i class="fa fa-minus"></i></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price|floatformat:2}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Gross Profit Retail Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.gross_profit_retail_price}}-->
+<!--                                {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="price-box">-->
+<!--                            <span class="cal-box">-->
+<!--                                <h5><b>Retail Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.retail_price|floatformat:2}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.retail_price_rounded}}-->
+<!--                                    {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="ml-4"><i class="fa fa-minus"></i></span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>All Cost Price</b></h5>-->
+<!--                            <span class="price-digit">{{pro.all_cost_price|floatformat:2}} <i class="fa fa-dollar"></i></span>-->
+<!--                            </span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span  class="ml-4"><strong>/</strong></span>-->
+<!--&lt;!&ndash;                            <span class="space"></span>&ndash;&gt;-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>Retail Price</b></h5>-->
+<!--                                <span class="price-digit">{{pro.retail_price}} <i-->
+<!--                                        class="fa fa-long-arrow-right"></i> {{pro.retail_price_rounded}}-->
+<!--                                    {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                                </span>-->
+<!--                            </span>-->
+<!--                            <span class="space"></span>-->
+<!--                            <span class="cal-box ml-4">-->
+<!--                                <h5><b>Gross Profit Retail Margin</b></h5>-->
+<!--                            <span class="price-digit">{{pro.margin_retail_price}}-->
+<!--                                {% if pro.retail_price_rule_unit == 'RON' %}<i class="fa fa-dollar"></i> {% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'Percent' %}<i class="fa fa-percent"></i>{% endif %}-->
+<!--                                        {% if pro.retail_price_rule_unit == 'N/A' %}N/A{% endif %}-->
+<!--                            </span>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">Calculating Price OF Product</h3></div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-info" onClick="detail_view()">View Detail</button>
+                </div>
+            </div>
+            <hr>
+            <div class="detail_view" style="display:none">
+
+
+                <table class="display nowrap dataTable competitorsListNew" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Price Unit</th>
+                        <th>Rule Identification</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Local Cost Supplier</td>
+                        <td>{% if pro.local_cost != 'N/A' %}{{pro.local_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                        <td>{% if pro.local_cost_is == True %}Cost{% endif %}
+                                    {% if pro.local_cost_is == False %}Percentage{% endif %}
+                                    {% if pro.local_cost_is == 'N/A' %}N/A{% endif %}
+                        </td>
+                        <td>{% if lcs_object %}Rule # {{lcs_object.rule.id}}{% else %}N/A{% endif %}</td>
+                    </tr>
+                     <tr>
+                        <td>Thenx Cost Supplier</td>
+                        <td>{% if pro.thenx_cost_is != 'N/A' %}{{pro.thenx_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                        <td>{% if pro.thenx_cost_is == True %}Cost{% endif %}
+                                    {% if pro.thenx_cost_is == False %}Percentage{% endif %}
+                                    {% if pro.thenx_cost_is == 'N/A' %}N/A{% endif %}
+                        </td>
+                         <td>{% if tcs_object %}Rule # {{tcs_object.rule.id}}{% else %}N/A{% endif %}</td>
+                    </tr>
+                     <tr>
+                        <td>VAT</td>
+                        <td>1.19</td>
+                        <td>Percent</td>
+                        <td>N/A</td>
+                    </tr>
+                     <tr>
+                        <td>All Cost Supplier</td>
+                        <td>{{pro.all_cost_price|floatformat:2}}</td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                    </tr>
+                     <tr>
+                        <td>Whole Sale Rule</td>
+                        <td>{{pro.whole_sale_margin}}</td>
+                        <td>{{pro.whole_sale_rule_unit}}</td>
+                        <td>{{pro.whole_sale_rule_identity}}</td>
+                    </tr>
+                     <tr>
+                        <td>Retail Price Rule</td>
+                        <td>{{pro.retail_price_margin}}</td>
+                        <td>{{pro.retail_price_rule_unit}}</td>
+                        <td>{{pro.retail_price_rule_identity}}</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Price Unit</th>
+                        <th>Rule Identification</th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <br>
+                <h3 class="text-center">Detailed Object</h3>
+                <br>
+                <div class="table-responsive">
+                    <table  id="dataTable" class="display nowrap competitorsList dataTable" cellspacing="0" width="100%">
+                    <thead>
+                    <tr role="row">
+                        <th>SKU</th>
+                        <th>Categories</th>
+                        <th>Name</th>
+                        <th>Supplier</th>
+                        <th>Supplier<br>Price</th>
+                        <th>Local<br>Cost</th>
+                        <th>Thenx<br>Cost</th>
+                        <th>VAT</th>
+                        <th>All<br>Cost</th>
+
+                        <th>Margin<br>Whole<br>Sale</th>
+                        <th>Whole<br>Sale<br>Price Unit</th>
+                        <th>Wholesale<br>Price</th>
+                        <th>Wholesale<br>Rounded<br>Price</th>
+                        <th>G.Profit<br>Wholesale</th>
+                        <th>G.Profit<br>Wholesale<br>Margin</th>
+
+                        <th>Margin<br>Retail</th>
+                        <th>Retail<br>Price Unit</th>
+                        <th>Retail<br>Price</th>
+                        <th>Retail<br>Rounded<br>Price</th>
+                        <th>G.Profit<br>Retail</th>
+                        <th>G.Profit<br>Retail<br>Margin</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                       <td>{{product.sku}}</td>
+                        {% if product.categories %}
+                            {% for obj2 in product.categories.all %}
+                                <td>{{obj2.name}}</td>
+                            {% endfor %}
+                        {% else %}
+                            <td>{{product.categories.all}}</td>
+                        {% endif %}
+                       <td>{{product.name}}</td>
+                       <td>{% if product.supplier %}{{product.supplier.name}}{% endif%}</td>
+                       <td>{{product.cost}}</td>
+                       <td>{% if pro.local_cost_is != 'N/A' %}{{pro.local_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                       <td>{% if pro.thenx_cost_is != 'N/A' %}{{pro.thenx_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                       <td>1.19</td>
+                       <td>{{pro.all_cost_price}}</td>
+
+                       <td>{{pro.whole_sale_margin}}</td>
+                       <td>{{pro.whole_sale_rule_unit}}</td>
+                       <td>{{pro.whole_sale}}</td>
+                       <td>{{pro.whole_sale_rounded}}</td>
+                       <td>{{pro.gross_profit_whole_sale}}</td>
+                       <td>{{pro.margin_whole_sale}}</td>
+
+                       <td>{{pro.retail_price_margin}}</td>
+                       <td>{{pro.retail_price_rule_unit}}</td>
+                       <td>{{pro.retail_price}}</td>
+                       <td>{{pro.retail_price_rounded}}</td>
+                       <td>{{pro.gross_profit_retail_price}}</td>
+                       <td>{{pro.margin_retail_price}}</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Categories</th>
+                        <th>Name</th>
+                        <th>Supplier</th>
+                        <th>Supplier<br>Price</th>
+                        <th>Local<br>Cost</th>
+                        <th>Thenx<br>Cost</th>
+                        <th>VAT</th>
+                        <th>All<br>Cost</th>
+
+                        <th>Margin<br>Whole<br>Sale</th>
+                        <th>Whole<br>Sale<br>Price Unit</th>
+                        <th>Wholesale<br>Price</th>
+                        <th>Wholesale<br>Rounded<br>Price</th>
+                        <th>G.Profit<br>Wholesale</th>
+                        <th>G.Profit<br>Wholesale<br>Margin</th>
+
+                        <th>Margin<br>Retail</th>
+                        <th>Retail<br>Price Unit</th>
+                        <th>Retail<br>Price</th>
+                        <th>Retail<br>Rounded<br>Price</th>
+                        <th>G.Profit<br>Retail</th>
+                        <th>G.Profit<br>Retail<br>Margin</th>
+
+                    </tr>
+                    </tfoot>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

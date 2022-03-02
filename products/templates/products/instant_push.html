@@ -1,0 +1,316 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/fixedheader/3.1.7/css/fixedHeader.dataTables.min.css" rel="stylesheet" type="text/css"/>
+
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+
+#dataTable tr td:nth-child(3){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+
+#dataTable tr td:nth-child(4){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 300px !important;
+}
+
+
+#dataTable tr td:nth-child(5){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+{% endblock %}
+{% block bodyblock %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+             <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">Instant Push To Not Wait Till 24 Hours</h3></div>
+                <div class="col-lg-6 text-right">
+                    <a href="/app/register_products_job" class="btn btn-primary">New Product</a>
+                    <a href="/app/register_product_competitor_job" class="btn btn-primary">New Product Competitors From Thenx</a>
+                </div>
+            </div>
+            <p class="text-muted m-b-30"></p>
+            <div class="table-responsive">
+
+                <form method="POST" action="/app/register_push_event">
+                    {% csrf_token %}
+                <div class="row" style="margin-bottom: 150px;">
+                    <div class="col-lg-2">
+                        <h5 class="m-t-30 m-b-10">Select Competitor</h5>
+                        <select class="form-control" id="supplier_select_competitor" name="competitor">
+                            <option selected value="0"> All Competitors</option>
+                            <option value="1"> Distrizone</option>
+                            <option value="2"> Gsmnet</option>
+                            <option value="3"> Inowgsm</option>
+                            <option value="4"> Magazingsm</option>
+                            <option value="5"> MokaGsm</option>
+                            <option value="6"> PowerLaptop</option>
+                            <option value="7"> Portableta</option>
+                            <option value="8"> ServicePack</option>
+                            <option value="9"> Sepmobile</option>
+                            <option value="10"> Sunnex</option>
+                            <option value="11"> Connectshop</option>
+                            <option value="12"> Tradegsm</option>
+                        </select>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Select Category</h5>
+                        <div class="input-group">
+                             <select class="form-control" data-style="form-control" id="category_select_competitor"
+                                name="category">
+                                <option selected value="0"> Select Category</option>
+                                {% for obj in categories %}
+                                <option value="{{obj.id}}" {% if category_val == obj.id %} selected {% endif %}>{{obj.name.title}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+                        <div class="input-group">
+                                 <select class="form-control" name="supplier">
+                            <option selected value="0"> Select Supplier</option>
+                            {% for obj in suppliers %}
+                            <option value="{{obj.id}}" {% if supplier_val == obj.id %} selected {% endif %}>{{obj.name.title}}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <h5 class="m-t-30 m-b-10">Type Product Sku</h5>
+                        <div class="input-group">
+                            <input class="form-control"
+                                   name="product"
+                                   placeholder="Type Product Sku If For Some Products Only" type="text">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <h5 class="m-t-30 m-b-10">Button</h5>
+                        <button class="btn btn-success"
+                                type="submit"
+                                id="filter_records_competitor">Start Instant Push</button>
+                    </div>
+                </div>
+                </form>
+                <div id="dataTableMain">
+                    <table id="dataTable" class="display nowrap competitorsList" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Sr #.</th>
+                            <th>Job Type</th>
+                            <th>Created At</th>
+                            <th>Competitors</th>
+                            <th>Products</th>
+                            <th>Price <br>Changes</th>
+                            <th>Job Status</th>
+                            <th>Supplier</th>
+                            <th>Category</th>
+                            <th>JobProgress</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Sr #.</th>
+                            <th>Job Type</th>
+                            <th>Created At</th>
+                            <th>Competitors</th>
+                            <th>Products</th>
+                            <th>Price <br>Changes</th>
+                            <th>Job Status</th>
+                            <th>Supplier</th>
+                            <th>Category</th>
+                            <th>JobProgress</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    #page-wrapper{
+        width: 100% !important;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        color: #298029!important;
+    }
+    .competitorsList .colorRedBackground {
+        color: #f89292!important;
+    }
+    .dt-buttons {
+        float: right !important;
+    }
+    .competitorsList .colorYellowBackground {
+        background: yellow !important;
+        color: black!important;
+        font-weight:600!important;
+    }
+
+
+    #dataTable tr td:nth-child(3){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 50px !important;
+        max-width: 80px !important;
+    }
+
+
+    #dataTable tr td:nth-child(4){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 50px !important;
+        max-width: 300px !important;
+    }
+
+
+    #dataTable tr td:nth-child(5){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 50px !important;
+        max-width: 80px !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+<script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script>
+
+<script>
+    getTableData();
+
+    function getTableData(){
+        $('#dataTable').DataTable({
+            dom: '<"top"lB>rt<"bottom"lp><"clear">',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            "lengthMenu": [[500, 1000], [500, 1000]],
+            "processing": true,
+            serverSide: true,
+            destroy: true,
+            ajax: {
+                // url: '{% url 'products:instant_push' %}',
+                url: '/app/instant_push',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "sr_no", "orderable": false},
+                { "data": "job_type", "orderable": false },
+                { "data": "created_at", "orderable": false },
+                { "data": "competitors", "orderable": false },
+                { "data": "products", "orderable": false },
+                { "data": "price_changes", "orderable": false },
+                { "data": "job_status", "orderable": false },
+                { "data": "supplier", "orderable": false },
+                { "data": "category", "orderable": false },
+                { "data": "job_progress", "orderable": false }
+            ],
+            "createdRow": function ( row, data, index ) {
+                if ( data.job_status == 'InProgress' ) {
+                    $('td', row).eq(6).addClass('colorRedBackground');
+                }
+                if ( data.job_status == 'Completed' ) {
+                    $('td', row).eq(6).addClass('colorGreenBackground');
+                }
+            },
+        });
+
+         var table = $('#dataTable').DataTable();
+
+    };
+
+
+</script>
+
+
+{% endblock %}

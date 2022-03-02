@@ -1,0 +1,547 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/fixedheader/3.1.7/css/fixedHeader.dataTables.min.css" rel="stylesheet" type="text/css"/>
+
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+#dataTable tr td:nth-child(3){
+word-wrap: break-word;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+min-width: 50px !important;
+max-width: 50px !important;
+}
+
+{% endblock %}
+{% block bodyblock %}
+<style>
+
+
+#dataTable tr td:nth-child(3){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+
+#dataTable tr td:nth-child(4){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 300px !important;
+}
+
+
+#dataTable tr td:nth-child(5){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+             <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">All Products</h3></div>
+                <div class="col-lg-6 text-right">
+                    <a class="btn btn-primary" href="/app/products/upload_products">Upload Products</a>
+                    <a class="btn btn-primary" href="/app/products/upload_product_competitors">Upload Product Comptetitors</a>
+                </div>
+            </div>
+            <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+            <div class="table-responsive">
+
+
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+                        <select class="form-control" id="supplier_select_competitor">
+                            <option selected> select</option>
+                            {% for obj in suppliers %}
+                            <option value="{{obj.id}}">{{obj.name.title}}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <div class="col-lg-3">
+
+                        <h5 class="m-t-30 m-b-10">Select Category</h5>
+                        <select class="form-control" data-style="form-control" id="category_select_competitor">
+                            <option  selected> select</option>
+                            {% for obj in categories %}
+                            <option value="{{obj.id}}">{{obj.name.title}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Type Product SKU</h5>
+                        <div class="input-group">
+                            <input class="form-control" id="product_select_competitor" type="text">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Fetch</h5>
+                        <button class="btn btn-success" onClick="resetAndFetchData();" id="filter_records_competitor">Filter Records</button>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <button class="btn btn-primary" onclick="updateData()">Update</button>
+                    <button class="btn btn-danger" onclick="deleteformSubmit()">Delete</button>
+                    <div>
+                        <span class="error_div" style="color: red"></span>
+                    </div>
+                </div>
+
+                <div id="dataTableMain">
+                    <table id="dataTable" class="display nowrap competitorsList" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="selectAll()"></th>
+                            <th>Sr #.</th>
+                            <th>SKU</th>
+                            <th>Categories</th>
+                            <th>Name</th>
+                            <th>Supplier</th>
+                            <th>Supplier<br>Price</th>
+                            <th>Local<br>Cost</th>
+                            <th>Thenx<br>Cost</th>
+                            <th>VAT</th>
+                            <th>All<br>Cost</th>
+
+                            <th>Margin<br>Whole<br>Sale</th>
+                            <th>Whole<br>Sale<br>Price Unit</th>
+                            <th>Wholesale<br>Price</th>
+                            <th>G.Profit<br>Wholesale</th>
+                            <th>G.Profit<br>Wholesale<br>Margin</th>
+
+                            <th>Margin<br>Retail</th>
+                            <th>Retail<br>Price Unit</th>
+                            <th>Retail<br>Price</th>
+                            <th>G.Profit<br>Retail</th>
+                            <th>G.Profit<br>Retail<br>Margin</th>
+
+                            <th>Smart<br>Price<br>Set</th>
+
+                            <th>Last<br>Product<br>Update</th>
+                            <th>Old<br>Price<br>(All Cost)</th>
+                            <th>Reference<br>id</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllagain" onclick="selectAllAgain()"></th>
+                            <th>Sr #.</th>
+                            <th>SKU</th>
+                            <th>Categories</th>
+                            <th>Name</th>
+                            <th>Supplier</th>
+                            <th>Supplier<br>Price</th>
+                            <th>Local<br>Cost</th>
+                            <th>Thenx<br>Cost</th>
+                            <th>VAT</th>
+                            <th>All<br>Cost</th>
+
+                            <th>Margin<br>Whole<br>Sale</th>
+                            <th>Whole<br>Sale<br>Price Unit</th>
+                            <th>Wholesale<br>Price</th>
+                            <th>G.Profit<br>Wholesale</th>
+                            <th>G.Profit<br>Wholesale<br>Margin</th>
+
+                            <th>Margin<br>Retail</th>
+                            <th>Retail<br>Price Unit</th>
+                            <th>Retail<br>Price</th>
+                            <th>G.Profit<br>Retail</th>
+                            <th>G.Profit<br>Retail<br>Margin</th>
+
+                            <th>Smart<br>Price<br>Set</th>
+
+                            <th>Last<br>Product<br>Update</th>
+                            <th>Old<br>Price<br>(All Cost)</th>
+                            <th>Reference<br>id</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="text-right">
+                    <button class="btn btn-primary" onclick="updateData()">Update</button>
+                    <button class="btn btn-danger" onclick="deleteformSubmit()">Delete</button>
+                    <div>
+                        <span class="error_div" style="color: red"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div aria-labelledby="exampleModalLabel2" class="modal fade" id="confirmationModalDelete" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="deleteformSubmit()" type="button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="DescModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                 <h3 class="modal-title">Update Smart Price</h3>
+
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="smartPrice" id="sid" value="">
+                <input type="text" name="smartPrice" id="smart_Price" value="">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn1" class="btn btn-default" >Apply!</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<style>
+    #page-wrapper{
+        width: 100% !important;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        background: #298029!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedBackground {
+        background: #ff0000!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorYellowBackground {
+        background: yellow !important;
+        color: black!important;
+        font-weight:600!important;
+    }
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+<script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script>
+
+
+<script>
+    getTableData();
+    function resetAndFetchData() {
+        this.getTableData();
+    }
+    function getTableData(){
+        supplier = $('#supplier_select_competitor').val();
+        category  = $('#category_select_competitor').val();
+        product = $('#product_select_competitor').val();
+        $('#dataTable').DataTable({
+            dom: '<"top"B>rt<"bottom"lp><"clear">'
+            , buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            "lengthMenu": [[100, 200, 500, 1000], [100, 200, 500, 1000]],
+            "processing": true,
+            serverSide: true,
+            destroy: true,
+            ajax: {
+                // url: '{% url 'products:products' %}',
+                url: '/app/products',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    d.category = category;
+                    d.supplier = supplier;
+                    d.product = product;
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        console.log('data', data);
+                        console.log('type', type);
+                        console.log('full', full);
+                        console.log('meta', meta);
+                        return '<input type="checkbox" class="checkboxSelect" id="' + $('<div/>').text(full.reference_id).html() + '">';
+                    }
+                },
+                { "data": "sr_no", "orderable": false},
+                { "data": "sku", "orderable": false },
+                { "data": "categories", "orderable": false },
+                { "data": "name", "orderable": false,
+                    "render": function ( data, type, full ) {
+                        // console.log('data', data);
+                        // console.log('type', type);
+                        // console.log('full', full);
+                        return '<a href="/app/products/detail/'+full.reference_id+'/">'+data+'</a>';
+                    }},
+                { "data": "supplier", "orderable": false },
+                { "data": "supplier_price", "orderable": false },
+                { "data": "local_cost", "orderable": false },
+                { "data": "thenx_cost", "orderable": false },
+                { "data": "vat", "orderable": false },
+                { "data": "all_cost", "orderable": false },
+
+                { "data": "margin_wholesale", "orderable": false },
+                { "data": "whole_sale_rule_unit", "orderable": false },
+                { "data": "whole_sale_price", "orderable": false },
+                { "data": "g_profile_wholesale", "orderable": false },
+                { "data": "g_profile_wholesale_margin", "orderable": false },
+
+                { "data": "margin_retail", "orderable": false },
+                { "data": "retail_price_rule_unit", "orderable": false },
+                { "data": "retail_price", "orderable": false },
+                { "data": "g_profile_retail", "orderable": false },
+                { "data": "g_profile_retail_margin", "orderable": false },
+
+                 { "data": "", "orderable": false,
+                    'render': function (data, type, full, meta){
+                        return '<span onClick="smart_price_popup_check(' + full.reference_id + ');" id="smart_price_' + full.reference_id + '">'+full.smart_price_set+'</span>';
+                    }
+                },
+
+                { "data": "last_update", "orderable": false },
+                { "data": "old_price_all_cost", "orderable": false },
+                { "data": "reference_id", "orderable": false,}
+            ],
+            "createdRow": function ( row, data, index ) {
+                if ( data.is_smart_price_set_applied === 'Yes' ) {
+                    $('td', row).eq(21).addClass('colorYellowBackground');
+                }
+            },
+        });
+    };
+
+
+    function smart_price_popup_check(id){
+        $('#DescModal').modal("show");
+        smart_price_identity = '#smart_price_' + id;
+        var price = $(smart_price_identity).html();
+        if (price=='N/A'){
+            price=0;
+        }
+        $('#smart_Price').val(price)
+        $('#sid').val(id)
+    }
+
+
+    $("#btn1").click(function(){
+        var smartPrice=$('#smart_Price').val() ;
+        var sid= $('#sid').val() ;
+
+        smart_price_id = '#smart_price_' + sid;
+        console.log(smart_price_id);
+        $.ajax({
+            type: "POST",
+            url: "/app/update_smart_price_of_product",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({sPrice: smartPrice, sid:sid}),
+            dataType: "json",
+            success: function(data){
+                $(smart_price_id).html(smartPrice);
+                $('#DescModal').modal('hide');
+            },
+            error: function(errMsg) {}
+        });
+    })
+
+    function selectAll() {
+        if ( document.getElementById('selectAll').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+            // $('.checkboxSelect').prop('checked', true);
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+    function selectAllAgain() {
+        if ( document.getElementById('selectAllagain').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+            // $('.checkboxSelect').prop('checked', true);
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+
+    function deleteData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+        $('#confirmationModalDelete').modal('show');
+    }
+
+    function deleteformSubmit() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/delete_products_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                resetAndFetchData();
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function updateData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/update_products_smart_price_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                resetAndFetchData();
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+</script>
+
+
+{% endblock %}

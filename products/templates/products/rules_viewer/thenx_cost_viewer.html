@@ -1,0 +1,322 @@
+{% if tcp_info %}
+
+
+    <script>
+        function thenx_cost_filter(){
+            supplier = $('#supplier_select_thenx_cost').val();
+            category  = $('#category_select_thenx_cost').val();
+            product = $('#product_select_thenx_cost').val();
+
+            $.post("{% url 'products:filter_costs_viewer' %}",
+              {csrfmiddlewaretoken: '{{ csrf_token }}', category: category, supplier: supplier, product: product, islcp: 0},
+              function(data){
+                $('.thenx_inner_rows').remove();
+
+                for (var i =0; i<data.length; i++ ){
+                    console.log(data[i]);
+                    supplier_ = data[i].supplier;
+                    category_ = data[i].category;
+                    product_ = data[i].product;
+
+                    if (category_ == ''){
+                        category_ = '-'
+                    }
+                    if (product_ == 'False' || product_ == 'false' || product_ == false){
+                        product_ = '-'
+                    }
+
+                    $('.thenx_main_row').append('\
+                        <tr class="local_cost_inner_rows"> \
+                                <td>'+data[i].rule_id+'</td>\
+                                <td>'+data[i].supplier+'</td>\
+                                <td>'+category_+'</td>\
+                                <td>'+product_+'</td>\
+                                <td>'+data[i].price+'</td>\
+                                <td>'+data[i].cost+'</td>\
+                                <td>'+data[i].cost_unit+'</td>\
+                                <td>'+data[i].percentage+'</td>\
+                                <td>'+data[i].percentage_unit+'</td>\
+                            <td style="display: inline-flex"> \
+                                <button class="btn btn-primary" style="font-size: 9px; padding: 0.8rem 0.6rem; margin-right: 5px;" onClick="editThenxCostRule('+data[i].rule_id+')">Edit</button> \
+                                <button class="btn btn-warning" style="font-size: 9px; padding: 0.8rem 0.6rem" onClick="delete_rule('+data[i].rule_id+')">Delete</button></td> \
+                        </tr> ');
+                };
+
+                let length = ($('.thenx_main_row .thenx_inner_rows').length).toString();
+                if (length == 0 )
+                {
+                    $('.thenx_main_row').append('<div class="row thenx_inner_rows">\
+                        <div class="col-sm-12">\
+                            <div class="white-box">\
+                                <div class="row">\
+                                    No Record Found\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </div>');
+                }
+            });
+        };
+
+
+        function editThenxCostRule(rule_id){
+            url = '/app/get_rule_detail?rule_id=' + rule_id;
+            $.get(url,
+              function(data, status){
+                document.getElementById('thenx_cost_price').value = data.cost;
+                document.getElementById('thenx_cost_price_unit').value = data.cost_unit_int;
+                document.getElementById('thenx_cost_supplier_linker_original').value = data.price;
+                document.getElementById('thenx_cost_price_percentage').value = data.percentage;
+                document.getElementById('thenx_cost_price_percentage_unit').value = data.percentage_unit_int;
+                document.getElementById('thenx_cost_supplier_linker').value = data.price;
+                document.getElementById('rule_identity').value = data.rule_id;
+            });
+            $('#thenxcostviewerpopupedit').modal('show');
+        }
+
+        function submitThenxCost(){
+            thenx_cost_price = document.getElementById('thenx_cost_price').value;
+            thenx_cost_price_unit = document.getElementById('thenx_cost_price_unit').value;
+            thenx_cost_price_competitor = document.getElementById('thenx_cost_supplier_linker_original').value;
+            thenx_cost_price_percentage = document.getElementById('thenx_cost_price_percentage').value;
+            thenx_cost_price_percentage_unit = document.getElementById('thenx_cost_price_percentage_unit').value;
+            rule_identity = document.getElementById('rule_identity').value;
+
+            console.log(thenx_cost_price);
+            console.log(thenx_cost_price_unit);
+            console.log(thenx_cost_price_competitor);
+            console.log(thenx_cost_price_percentage);
+            console.log(thenx_cost_price_percentage_unit);
+
+            bool_check = true;
+
+            if (thenx_cost_price == ""){
+                bool_check = false;
+            }
+            if (thenx_cost_price_unit == ""){
+                bool_check = false;
+            }
+            if (thenx_cost_price_competitor == ""){
+                bool_check = false;
+            }
+            if (thenx_cost_price_percentage == ""){
+                bool_check = false;
+            }
+            if (thenx_cost_price_percentage_unit == ""){
+                bool_check = false;
+            }
+            console.log(bool_check);
+            if (bool_check == true){
+                $.post("{% url 'products:edit_rule' %}",
+                    {
+                        thenx_cost_price: thenx_cost_price,
+                        thenx_cost_price_unit: thenx_cost_price_unit,
+                        thenx_cost_price_competitor: thenx_cost_price_competitor,
+                        thenx_cost_price_percentage: thenx_cost_price_percentage,
+                        thenx_cost_price_percentage_unit: thenx_cost_price_percentage_unit,
+                        rule_identity: rule_identity,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                  function(data, status){
+                    alert("edited");
+                    $('#thenxcostviewerpopupedit').modal('toggle');
+                    thenx_cost_filter();
+                });
+            }
+        }
+
+
+
+    </script>
+
+
+<div aria-labelledby="thenxcostviewerpopup" class="modal fade" id="thenxcostviewerpopupedit" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document" style="max-width: 800px;">
+        <div class="modal-content" style="position: absolute;width: 800px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div id="thenx-cost-div">
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Add Additional Cost</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="thenx_cost_price" name="thenx_cost_price" placeholder="Enter Cost"
+                                       type="text" step="0.01">
+                                <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+                            </div>
+                        </div>
+                
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+                            <select class="form-control" data-style="form-control" name="thenx_cost_price_unit" id="thenx_cost_price_unit">
+                                <option value="1" selected>RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">If Supplier Price is Higher Than</h5>
+                            <div class="input-group">
+                                <input class="form-control" disabled type="text" value="If Supplier Price is Higher Than">
+                            </div>
+                        </div>
+                
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Price</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="thenx_cost_supplier_linker_original" name="thenx_cost_price_competitor" placeholder="Enter Price"
+                                       type="text" step="0.01">
+                                <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Add Additional Price</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="thenx_cost_price_percentage" name="thenx_cost_price_percentage"
+                                       placeholder="Enter Cost"
+                                       type="text" step="0.01">
+                                <div class="input-group-addon"><i class="fa fa-percent"></i></div>
+                            </div>
+                        </div>
+                
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+                                <select class="form-control" data-style="form-control" name="thenx_cost_price_percentage_unit" id="thenx_cost_price_percentage_unit">
+                                <option value="1" selected>RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+                    </div>
+                
+                
+                     <div class="row">
+                         <div class="form-group col-6">
+                             <h5 class="m-t-30 m-b-10">If Supplier Price is Lower Than</h5>
+                             <div class="input-group">
+                                 <input class="form-control" disabled type="text" value="If Supplier Price is Lower Than">
+                             </div>
+                         </div>
+                
+                         <div class="form-group col-6">
+                             <h5 class="m-t-30 m-b-10">Price</h5>
+                             <div class="input-group">
+                                 <input class="form-control" disabled id="thenx_cost_supplier_linker" placeholder="Enter Price"
+                                        type="text" step="0.01">
+                                 <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="error_div"></div>
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" type="button" onClick="submitThenxCost()">Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-bottom: 20px;padding-left: 2%;">
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+        <select class="form-control" id="supplier_select_thenx_cost">
+            <option disabled selected> select</option>
+            <option value="0">All Suppliers</option>
+            {% for obj in suppliers %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    <div class="col-lg-3">
+
+        <h5 class="m-t-30 m-b-10">Select Category</h5>
+        <select class="form-control" data-style="form-control" id="category_select_thenx_cost">
+            <option disabled selected> select</option>
+            <option value="0">All Categories</option>
+            {% for obj in categories %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Type Product SKU</h5>
+        <div class="input-group">
+            <input class="form-control" id="product_select_thenx_cost" type="text">
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Fetch</h5>
+        <button class="btn btn-success" id="filter_records_thenx_cost" onClick="thenx_cost_filter();">Filter Records
+        </button>
+        <button class="btn btn-danger" onClick="delete_all_rules(5);">Delete All Thenx Cost Rules</button>
+    </div>
+</div>
+
+
+<div>
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="table-responsive">
+                <table cellspacing="0" class="table table-striped" id="thenxcostdataTable" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Supplier</th>
+                        <th>Category</th>
+                        <th>SKU</th>
+                        <th>Price <br>Dependancy</th>
+                        <th>Higher Price <br>Margin</th>
+                        <th>Unit</th>
+                        <th>Lower Price <br>Margin</th>
+                        <th>Unit</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="thenx_main_row">
+                    {% for lcp in tcp_info %}
+                    <tr class="thenx_inner_rows">
+                        <td>{{lcp.rule_id}}</td>
+                        <td>{{lcp.supplier}}</td>
+                        <td>{{lcp.category}}</td>
+                        <td>{{lcp.product}}</td>
+                        <td>{{lcp.price}}</td>
+                        <td>{{lcp.cost}}</td>
+                        <td>{{lcp.cost_unit}}</td>
+                        <td>{{lcp.percentage}}</td>
+                        <td>{{lcp.percentage_unit}}</td>
+                        <td style="display: inline-flex">
+                            <button class="btn btn-primary" style="font-size: 9px; padding: 0.8rem 0.6rem; margin-right: 5px;" onClick="editThenxCostRule({{lcp.rule_id}})">Edit</button>
+                            <button class="btn btn-warning" style="font-size: 9px; padding: 0.8em 0.6 em" onClick="delete_rule({{lcp.rule_id}})">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    {% else %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="white-box">
+                <div class="row">
+                    Please add Thenx Cost Viewer Information.
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}

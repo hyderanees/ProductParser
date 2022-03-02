@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">Product Competitors List</h3></div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-info" onClick="competitors_view()">View Detail</button>
+                </div>
+            </div>
+            <hr>
+            <div class="competitors_view" style="display:none">
+                <div class="row" style="font-weight: 700; ">
+                    <div class="col-md-4">
+                        Competitor Site
+                    </div>
+                    <div class="col-md-4">
+                        Competitor Link
+                    </div>
+                    <div class="col-md-2">
+                        Action
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary" id="exampleModalBtn" data-target="#exampleModal" data-toggle="modal" type="button">
+                            Add New
+                        </button>
+                    </div>
+
+                    <div aria-labelledby="exampleModalLabel1" class="modal fade" id="exampleModal" role="dialog"
+                         tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="exampleModalLabel1">New message</h4></div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label class="control-label" for="message-text">Select Competitor
+                                                Site:</label>
+                                            <select class="form-control" id="competitor_site">
+                                                {% for obj in product_competitors %}
+                                                <option value="{{obj.id}}">{{obj.name.title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="message-text">Type Competitor
+                                                Link:</label>
+                                            <input class="form-control" id="competitor_link">
+                                        </div>
+                                        <div class="error_div" style="color: red"></div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                                    <button class="btn btn-primary" onClick="form_submit()" type="button">Save
+                                        Information
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <hr>
+                <div class="competitors_main_div">
+                    {% for obj in competitors %}
+                    <div class="row competitorsclasss" id="competitor{{obj.id}}">
+                        <div class="col-md-4">{{obj.site_reference.name}}</div>
+                        <div class="col-md-4">{{obj.link}}</div>
+                        <div class="col-md-4">
+                            <button class="btn btn-danger" onClick="delete_competitor({{obj.id}})">Delete</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,251 @@
+{% load static %}
+{% load products_extra %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plugins/images/favicon.png' %}">
+    <title>Square Store</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css' %}" rel="stylesheet">
+    <!-- Menu CSS -->
+    <link href="{% static 'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css' %}" rel="stylesheet">
+    <!-- morris CSS -->
+    <link href="{% static 'plugins/bower_components/morrisjs/morris.css' %}" rel="stylesheet">
+    <!-- animation CSS -->
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.min.css' %}" rel="stylesheet">
+                              
+    <!-- color CSS -->
+    <link href="{% static 'css/colors/megna.css' %}" id="theme" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+<![endif]-->
+
+<style type="text/css">
+    .footer {
+        position: unset;
+    }
+    .top-left-part {
+        background: transparent;
+    }
+    .navbar-header {
+        padding: 10px;
+        background: #000;
+        padding: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,.2);
+    }
+    .navbar-header img {
+        width: 220px;
+    }
+    #page-wrapper {
+        width:80%;
+        margin: 2em auto;
+    }
+    .nav-btn {
+        display: none;
+        padding: 1em;
+    background: transparent;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    outline: none;
+    }
+    .openNav {
+        display: block !important;
+    }
+    @media screen and (max-width:800px){
+        #page-wrapper {
+            width: 100%;
+        }
+        .nav-btn {
+            display: block;
+            float: right;
+        }
+        .navbar-right {
+            display: none;
+        }
+        .navbar-top-links>li {
+            display: block !important;
+            width: 100%;
+            margin: .5em 0;
+        }
+    }
+    body {
+        background: #edf1f5;
+    }
+    .navbar-header img {
+        width: 268px;
+        height: 48px;
+    }
+    .navbar-top-links>li>a {
+        color: #fff;
+        transition: .3s all;
+        border-radius: 2em;
+        padding: 0 2em !important;
+        font-weight: 700;
+    }
+
+    .navbar-top-links>li>a:hover,.navbar-top-links>li>a.active {
+        background: #fedd00;
+    }
+    {% block stylesheet %}
+    {% endblock %}
+</style>
+
+    {% block style_cdn_links %}
+    {% endblock %}
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="cssload-speeding-wheel"></div>
+    </div>
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top m-b-0">
+
+            <div class="navbar-header">
+
+                <div class="top-left-part"><a class="logo" href="{% url 'products:home' %}">
+                    <img src="{% static 'plugins/images/ThenX_Logo White Reversed.png' %}" alt="home" />
+                </a></div>
+                <button class="nav-btn" id="nav-btn">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="nav navbar-top-links navbar-right pull-right" id="navhidden">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:home' %}">
+                            Dashboard</a>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:instant_push' %}">
+                            InstantPush</a>
+                    </li>
+                    {% if request.user|has_group:"products" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:products_new' %}">
+                            Products</a>
+                    </li>
+                    {% endif %}
+                     {% if request.user|has_group:"dailyprice" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:daily_update' %}">
+                            Daily Price
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if request.user|has_group:"competitors" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:competitors_info_new' %}">
+                           <span>Scrapping</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if request.user|has_group:"activelinks" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:updated_on_thenx' %}">
+                            Active Links</a>
+                    </li>
+                    {% endif %}
+                    {% if request.user|has_group:"cronlogs" %}
+                     <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:job_logs' %}">
+                            Cron Job</a>
+                    </li>
+                    {% endif %}
+                    {% if request.user|has_group:"rules" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:rules' %}">
+                            Rules</a>
+                    </li>
+                    {% endif %}
+<!--                    {% if request.user|has_group:"scrappingjobs" %}-->
+<!--                    <li class="dropdown">-->
+<!--                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:scrapping_job_links' %}">-->
+<!--                            Competitors Info</a>-->
+<!--                    </li>-->
+<!--                    {% endif %}-->
+                    {% if request.user|has_group:"allusersinfo" %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:users_info' %}">
+                            Settings</a>
+                    </li>
+                    {% endif %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'logout' %}">
+                            Logout</a>
+                    </li>
+
+<!--                     <li class="dropdown">-->
+<!--                        <a class="dropdown-toggle waves-effect waves-light" href="{% url 'products:job_detail' %}">-->
+<!--                            Competitor Logs</a>-->
+<!--                    </li>-->
+                </ul>
+            </div>
+            <!-- /.navbar-header -->
+            <!-- /.navbar-top-links -->
+            <!-- /.navbar-static-side -->
+        </nav>
+        <!-- Left navbar-header -->
+
+        <!-- Left navbar-header end -->
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+               {% block bodyblock %}
+                {% endblock %}
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <footer class="footer text-center"> 2020 &copy; Square Store </footer>
+        <!-- /#page-wrapper -->
+    </div>
+
+    <!-- /#wrapper -->
+    <!-- jQuery -->
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'bootstrap/dist/js/tether.min.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/bootstrap-extension/js/bootstrap-extension.min.js' %}"></script>
+    <!-- Menu Plugin JavaScript -->
+    <script src="{% static 'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js' %}"></script>
+    <!--slimscroll JavaScript -->
+    <script src="{% static 'js/jquery.slimscroll.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'js/waves.js' %}"></script>
+    <!--Morris JavaScript -->
+    <!-- Sparkline chart JavaScript -->
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+    <!-- jQuery peity -->
+    <script src="{% static 'plugins/bower_components/peity/jquery.peity.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/peity/jquery.peity.init.js' %}"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="{% static 'js/custom.min.js' %}"></script>
+    <!--Style Switcher -->
+    <script src="{% static 'plugins/bower_components/styleswitcher/jQuery.style.switcher.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.nav-btn').click(function(){
+                $('#navhidden').slideToggle('openNav');
+            })
+        })
+    </script>
+{% block javascript %}
+{% endblock %}
+</body>
+
+</html>

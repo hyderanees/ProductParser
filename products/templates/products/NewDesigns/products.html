@@ -1,0 +1,543 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<!--<link rel="stylesheet" href="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.css' %}">-->
+
+{% endblock %}
+
+{% block bodyblock %}
+<style>
+     #page-wrapper{
+        width: 100% !important;
+    }
+
+    .dark-heading {
+        color: black;
+        font-weight: 500;
+        font-size: 1.4em!important;
+    }
+
+    .filter-button {
+        background: #fedd00;
+        border: 1px solid #fedd00;
+        padding-left: 3em;
+        padding-right: 3em;
+    }
+
+    .form_class {
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .all-cost-price {
+        background: #fedd00!important;
+        font-weight: 300;
+    }
+
+    .whole-cost-price {
+        color: #92cc66!important;
+        font-weight: 300;
+    }
+
+    .smart-price {
+        background: #1384ff!important;
+        font-weight: 300;
+    }
+
+    .cheap-price {
+        font-weight: 100;
+    }
+
+    .margin-color {
+        color: #000!important;
+        font-weight: 300;
+    }
+
+    .table-heading {
+        color: #fff;
+        font-weight: 700;
+        background: #808080;
+    }
+
+    .table-heading th{
+        color: #fff;
+        font-weight: 700;
+        vertical-align: middle!important;
+        text-align: center!important;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        background: #808080;
+    }
+
+    .table-body td {
+        color: #a18080;
+        font-size: 13px;
+        font-weight: 200;
+        text-align: center!important;
+        vertical-align: middle!important;
+    }
+
+    .table-body td {
+        border: 1px solid #d0cece;
+    }
+
+    .table tr td:nth-child(8),td:nth-child(12),td:nth-child(16),td:nth-child(17){
+        font-weight: 800;
+    }
+    .table tr td:nth-child(6), th:nth-child(6) {
+        text-align: right!important;
+    }
+    .table tr td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(5),
+        th:nth-child(2),th:nth-child(3),th:nth-child(4),th:nth-child(5) {
+        text-align: left!important;
+    }
+
+    .table tr td:nth-child(1),td:nth-child(2),td:nth-child(6),td:nth-child(7),td:nth-child(8),
+         td:nth-child(9),td:nth-child(10),td:nth-child(11),td:nth-child(12),td:nth-child(14),
+         td:nth-child(15),td:nth-child(16),td:nth-child(17),td:nth-child(19),td:nth-child(20),
+         th:nth-child(1),th:nth-child(2),th:nth-child(6),th:nth-child(7),th:nth-child(8),
+         th:nth-child(9),th:nth-child(10),th:nth-child(11),th:nth-child(12),th:nth-child(14),
+         th:nth-child(15),th:nth-child(16),th:nth-child(17),th:nth-child(19),th:nth-child(20){
+        min-width: 70px !important;
+        max-width: 90px !important;
+    }
+    .table tr td:nth-child(3),td:nth-child(5),td:nth-child(13),td:nth-child(18),
+        th:nth-child(3),th:nth-child(5),th:nth-child(13),th:nth-child(18){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 150px !important;
+        max-width: 150px !important;
+    }
+    .table tr td:nth-child(4),th:nth-child(4){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 200px !important;
+        max-width: 200px !important;
+    }
+    #header-fixed {
+        position: fixed;
+        top: 0px; display:none;
+        background-color:white;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .table-responsive {
+      display: inline-block;
+      height: 90vh;
+      overflow: auto
+    }
+
+    .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover,
+        .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+        background-color: #fedd00;
+        border-color: #fedd00;
+    }
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th,
+    .table>thead>tr>td, .table>thead>tr>th {
+        padding: 2px;
+    }
+    .table-responsive::-webkit-scrollbar {
+        display: none;
+    }
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0  dark-heading">Products</h3></div>
+                <div class="col-lg-6 text-right">
+                    <a class="btn btn-primary" href="/app/products/upload_products">Upload Products</a>
+                    <a class="btn btn-primary" href="/app/products/upload_product_competitors">Upload Product
+                        Comptetitors</a>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <form id="form" class="form_class" method="POST" action="{% url 'products:products_new' %}">
+                    {% csrf_token %}
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10 dark-heading">Select Supplier</h5>
+                        <select class="form-control" id="supplier_select_competitor" name="supplier">
+                            <option selected value="0"> Select Supplier</option>
+                            {% for obj in suppliers %}
+                            <option value="{{obj.id}}" {% if supplier_val == obj.id %} selected {% endif %}>{{obj.name.title}}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <div class="col-lg-3">
+
+                        <h5 class="m-t-30 m-b-10 dark-heading">Select Category</h5>
+                        <select class="form-control" data-style="form-control" id="category_select_competitor"
+                                name="category">
+                            <option selected value="0"> Select Category</option>
+                            {% for obj in categories %}
+                            <option value="{{obj.id}}" {% if category_val == obj.id %} selected {% endif %}>{{obj.name.title}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10 dark-heading">Type Product SKU</h5>
+                        <div class="input-group">
+                            <input class="form-control" id="product_select_competitor" type="text"
+                                   name="product"
+                                   value="{{product_val}}"
+                                   placeholder="Product SKU">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="limit" id="limit" value="{{limit}}">
+                    <input type="hidden" name="page" id="page" value="{{page}}">
+
+                    <div class="col-lg-3 text-left">
+                        <div style="margin-top: 15%;">
+                            <button type="submit" class="btn btn-success filter-button"
+                                    id="filter_records_competitor">Filter
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="dataTables_length" id="dataTable_length">
+                        <label>Show
+                            <select name="dataTable_length" aria-controls="dataTable" class="" id="table-limit" >
+                                <option {% if limit == 500 %} selected {% endif %} value="500" >500</option>
+                                <option {% if limit == 1000 %} selected {% endif %} value="1000" >1000</option>
+                            </select>
+                            entries</label>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <a class="btn btn-success" href="/app/export_products_csv_file">Export to CSV</a>
+                    <button class="btn btn-primary" onclick="updateData()">Update</button>
+                    <button class="btn btn-danger" onclick="deleteformSubmit()">Delete</button>
+                    <div>
+                        <span class="error_div" style="color: red"></span>
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div class="table-responsive" style="margin-top: 40px;">
+                <table class="table" id="table-1">
+                    <thead>
+                        <tr class="table-heading">
+                            <th><input type="checkbox" id="selectAll" onclick="selectAll()"></th>
+                            <th>SKU</th>
+                            <th>Categories</th>
+                            <th>Product Name</th>
+                            <th>Supplier</th>
+                            <th>Supplier <br>Price</th>
+                            <th>Bank<br>Exchange<br>Rate</th>
+                            <th>Supplier<br>Price<br>Ron</th>
+                            <th>Local<br>C.</th>
+                            <th>Thenx<br>C.</th>
+                            <th>VAT</th>
+                            <th class="all-cost-price">All Cost</th>
+                            <th>Last All Cost<br>Price & Date</th>
+                            <th class="margin-color">Margin<br>Whole</th>
+                            <th class="margin-color">Margin<br>Retail</th>
+                            <th class="whole-cost-price">Whole<br>Price</th>
+                            <th class="whole-cost-price">Retail<br>Price</th>
+                            <th>Last Retail<br>Price & Date</th>
+                            <th class="smart-price">Smart<br>Price</th>
+                            <th class="cheap-price">Cheap<br>Comp.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in products %}
+                            <tr class="table-body">
+                                <td><input type="checkbox" class="checkboxSelect" id="{{obj.reference_id}}"></td>
+                                <td>{{obj.sku}}</td>
+                                <td>
+                                    {% for obj2 in obj.categories.all %}
+                                        {{obj2.name}}
+                                    {% endfor %}
+                                </td>
+                                <td><a href="/app/products/detail/{{obj.reference_id}}/">{{obj.name}}</a></td>
+                                <td>{% if obj.supplier %}{{obj.supplier.name}}{% endif %}</td>
+                                <td>
+                                    {% if obj.currency_code == 1 %}&#8352;
+                                    {% elif obj.currency_code == 2%}&#36;
+                                    {% elif obj.currency_code == 3%}&#165;
+                                    {% elif obj.currency_code == 4%} &#8478;
+                                    {% endif %}
+                                    {{obj.supplier_price_ron|floatformat:2}}
+                                </td>
+                                <td>{{obj.exchange_rate|floatformat:2}}</td>
+                                <td>{{obj.cost|floatformat:2}}</td>
+                                <td>{%if obj.local_cost %}{{obj.local_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                                <td>{%if obj.thenx_cost %}{{obj.thenx_cost|floatformat:2}}{% else %}N/A{% endif %}</td>
+                                <td>1.19</td>
+                                <td>{%if obj.all_cost_price %}{{obj.all_cost_price|floatformat:2}}{% else %}N/A{% endif %}</td>
+                                <td>{% if obj.old_all_cost_date %}{{obj.old_all_cost_price|floatformat:2}} - {{obj.old_all_cost_date}}{% else %}-{% endif %}</td>
+                                <td>{%if obj.margin_whole_sale %}{{obj.margin_whole_sale|floatformat:2}}{% if obj.margin_whole_sale_unit == 1 %}${% endif %}{% if obj.margin_whole_sale_unit == 2 %}%{% endif %}{% else %}N/A{% endif %}</td>
+                                <td>{%if obj.margin_retail %}{{obj.margin_retail|floatformat:2}}{% if obj.margin_retail_unit == 1 %}${% endif %}{% if obj.margin_retail_unit == 2 %}%{% endif %}{% else %}N/A{% endif %}</td>
+                                <td>{%if obj.whole_sale_price %}{{obj.whole_sale_price|floatformat:2}}{% else %}N/A{% endif %}</td>
+                                <td>{%if obj.retail_price %}{{obj.retail_price|floatformat:2}}{% else %}N/A{% endif %}</td>
+                                <td>{% if obj.old_retail_date %}{{obj.old_retail_price|floatformat:2}} - {{obj.old_retail_date}}{% else %}-{% endif %}</td>
+                                <td onclick="smart_price_popup_check({{obj.reference_id}});" {% if obj.is_smart_price_already_set %}style="background: #fedd00;"{% endif %}>
+                                    <span id="smart_price_{{obj.reference_id}}">{%if obj.is_smart_price_already_set %}{{obj.smart_price_value|floatformat:2}}{% else %}-{% endif %}</span></td>
+                                <td>{%if obj.cheapest_comp %}{{obj.cheapest_comp|floatformat:2}}{% else %}N/A{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6"></div>
+                <div class="col-lg-6 text-right">
+                {% if products.has_other_pages %}
+                    <ul class="pagination">
+                          {% if products.number|add:'-4' > 1 %}
+                            <li><a class="href_link" onclick="pageClick(1);">1</a></li>
+                            <li><a class="href_link" onclick="pageClick({{ products.number|add:'-5' }});">&hellip;</a></li>
+                          {% endif %}
+                          {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                                <li class="active"><span>{{ i }}</span></li>
+                            {% elif i > products.number|add:'-3' and i < products.number|add:'3' %}
+                                <li><a class="href_link" onclick="pageClick({{ i }});">{{ i }}</a></li>
+                              {% endif %}
+                          {% endfor %}
+                          {% if products.paginator.num_pages > products.number|add:'4' %}
+                            <li><a class="href_link" onclick="pageClick({{ products.number|add:'5' }});">&hellip;</a></li>
+                            <li><a class="href_link" onclick="pageClick({{ products.paginator.count }});">{{ products.paginator.count }}</a></li>
+                          {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel2" class="modal fade" id="confirmationModalDelete" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="deleteformSubmit()" type="button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="DescModal" role="dialog">
+    <div class="modal-dialog" style="margin: 250px auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                 <h3 class="modal-title">Update Smart Price</h3>
+
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="smartPrice" id="sid" value="">
+                <input type="text" name="smartPrice" id="smart_Price" value="">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn1" class="btn btn-default" >Apply!</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/waypoints/lib/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/waypoints/lib/shortcuts/infinite.min.js' %}"></script>
+
+<script type="text/javascript">
+    $('#table-limit').change(function () {
+        var value = this.value;
+        $('#limit').val(value);
+        $('#page').val(1);
+        submit_form();
+    });
+
+    function pageClick(page) {
+        $('#page').val(page);
+        submit_form();
+    }
+
+    function submit_form() {
+        $('#form').submit();
+    }
+
+
+    function smart_price_popup_check(id){
+        $('#DescModal').modal("show");
+        smart_price_identity = '#smart_price_' + id;
+        var price = $(smart_price_identity).html();
+        if (price=='-'){
+            price=0;
+        }
+        $('#smart_Price').val(price)
+        $('#sid').val(id)
+    }
+
+
+    $("#btn1").click(function(){
+        var smartPrice=$('#smart_Price').val() ;
+        var sid= $('#sid').val() ;
+
+        smart_price_id = '#smart_price_' + sid;
+        console.log(smart_price_id);
+        $.ajax({
+            type: "POST",
+            url: "/app/update_smart_price_of_product",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({sPrice: smartPrice, sid:sid}),
+            dataType: "json",
+            success: function(data){
+                $(smart_price_id).html(smartPrice);
+                $('#DescModal').modal('hide');
+            },
+            error: function(errMsg) {}
+        });
+    })
+
+    function selectAll() {
+        if ( document.getElementById('selectAll').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+            // $('.checkboxSelect').prop('checked', true);
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+    function selectAllAgain() {
+        if ( document.getElementById('selectAllagain').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+            // $('.checkboxSelect').prop('checked', true);
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+
+    function deleteData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+        $('#confirmationModalDelete').modal('show');
+    }
+
+    function deleteformSubmit() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/delete_products_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                alert("Deleted Successfully! Reload Page Now");
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function updateData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/update_products_smart_price_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                if (data.is_smart_price_found == true ) {
+                    alert("Smart Prices are updated, please reload page");
+                }
+                else{
+                    alert("Smart Price is not set!");
+                }
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+
+</script>
+
+{% endblock %}

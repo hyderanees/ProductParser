@@ -1,0 +1,232 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block stylesheet %}
+    .first_block {
+        border-bottom: 5px solid #9675ce;
+    }
+    .second_block {
+        border-bottom: 5px solid #03a9f3;
+    }
+    .third_block {
+        border-bottom: 5px solid #00c292;
+    }
+    .fourth_block {
+        border-bottom: 5px solid #fb9678;
+    }
+    .heading_div {
+
+    }
+    .detail_div {
+        font-weight: 600;
+        text-align: right !important;
+        color: black;
+    }
+    .main_heading {
+        color: #29ABE2;
+    }
+    .row.equal-cols {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+    }
+
+    .row.equal-cols:before,
+    .row.equal-cols:after {
+      display: block;
+    }
+
+    .row.equal-cols > [class*='col-'] {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .row.equal-cols > [class*='col-'] > * {
+      -webkit-flex: 1 1 auto;
+      -ms-flex: 1 1 auto;
+      flex: 1 1 auto;
+    }
+.white-box {
+    box-shadow: 0 6px 10px rgba(0,0,0,.2);
+}
+{% endblock %}
+{% block bodyblock %}
+
+<div class="row equal-cols" style="padding-top: 10px">
+    <div class="col-md-3 col-sm-6">
+        <div class="white-box text-left first_block">
+            <h3 class="main_heading">Competitors</h3>
+            <div class="row">
+                <div class="col-8 col-md-8 heading_div">Total Sites</div>
+                <div class="col-4 col-md-4 detail_div">{{competitor_count}} Sites</div>
+            </div>
+            <div class="row">
+                <div class="col-8 col-md-8 heading_div">Total Scraping Links</div>
+                <div class="col-4 col-md-4 detail_div">{{competitor_link}} Links</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="white-box text-left second_block">
+            <h3 class="main_heading">Thenx Platform</h3>
+            <div class="row">
+                <div class="col-6 col-md-6 heading_div">Products</div>
+                <div class="col-6 col-md-6 detail_div">{{total_products}}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-6 heading_div">Suppliers</div>
+                <div class="col-6 col-md-6 detail_div">{{total_suppliers}}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-6 heading_div">Brands</div>
+                <div class="col-6 col-md-6 detail_div">{{total_brands}}</div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-6 heading_div">Categories</div>
+                <div class="col-6 col-md-6 detail_div">{{total_categories}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="white-box text-left third_block">
+            <h3 class="main_heading">Daily Tracking Summary</h3>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Succeeded Jobs</div>
+                <div class="col-3 col-md-3 detail_div">{{succeded_crons}}</div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Failure Jobs</div>
+                <div class="col-3 col-md-3 detail_div">{{failure_crons}}</div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Total Scraping Jobs</div>
+                <div class="col-3 col-md-3 detail_div">{{total_crons}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="white-box text-left fourth_block">
+            <h3 class="main_heading">Decisions</h3>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Margin Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{margin_rules}}</div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Warranty Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{warranty_rules}}</div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Local Cost Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{local_cost_rules}}</div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Thenx Cost Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{thenx_cost_rules}}</div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-md-9 heading_div">Competitor Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{competitor_rules}}</div>
+            </div>
+            <hr>
+              <div class="row">
+                <div class="col-9 col-md-9 heading_div">Total Rules</div>
+                <div class="col-3 col-md-3 detail_div">{{total_rules}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/row -->
+<!-- .row -->
+<div class="row equal-cols">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+        <div class="white-box">
+            <h3 class="box-title">Price Changes Details ({% now "jS F Y" %})</h3>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <h6>Total Prices</h6> <b>{{total_prices}} </b></div>
+                <div class="stat-item">
+                    <h6>Exceeded Prices </h6> <b>{{exceeded_prices}}</b></div>
+                <div class="stat-item">
+                    <h6>Decreased Prices</h6> <b>{{decreased_prices}}</b></div>
+                <div class="stat-item">
+                    <h6>Same Prices</h6> <b>{{same_prices}}</b></div>
+
+            </div>
+        </div>
+    </div><div class="col-md-6 col-sm-12 col-xs-12">
+        <div class="white-box">
+            <h3 class="box-title"> Changes Effected On Thenx ({% now "jS F Y" %})</h3>
+            <div class="row">
+                <div class="col-lg-6 text-left">Updated Prices</div>
+                <div class="col-lg-6 text-left"> <b>{{updated_prices}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 text-left">Original Prices Applied</div>
+                <div class="col-lg-6 text-left"> <b>{{is_original_price_applied}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 text-left">Competitor Rule Applied</div>
+                <div class="col-lg-6 text-left"> <b>{{is_competitor_rule_applied}}</b></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 text-left">Margin Rule Applied</div>
+                <div class="col-lg-6 text-left"> <b>{{is_margin_rule_applied}}</b></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row equal-cols">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="box-title">Competitor Product Details ({% if weekly_new_products %}{{weekly_new_products.created_at}}{% else %}-{% endif %})</h3>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="{% url 'products:get_new_product_details' %}" class="btn btn-info">View Competitor Product Details</a>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <h6>Magazingsm</h6> <b>{% if weekly_new_products %}{{weekly_new_products.magazingsm_new_products}}{% else %}-{% endif %}</b></div>
+                <div class="stat-item">
+                    <h6>Service Pack </h6> <b>{% if weekly_new_products %}{{weekly_new_products.service_pack_new_products}}{% else %}-{% endif %}</b></div>
+                <div class="stat-item">
+                    <h6>Protableta</h6> <b>{% if weekly_new_products %}{{weekly_new_products.portableta_new_products}}{% else %}-{% endif %}</b></div>
+                <div class="stat-item">
+                    <h6>Mokagsm</h6> <b>{% if weekly_new_products %}{{weekly_new_products.moka_gsm_new_products}}{% else %}-{% endif %}</b></div>
+                <div class="stat-item">
+                    <h6>Sunnex</h6> <b>{% if weekly_new_products %}{{weekly_new_products.sunnex_new_products}}{% else %}-{% endif %}</b></div>
+                <div class="stat-item">
+                    <h6>Gsmnet</h6> <b>{% if weekly_new_products %}{{weekly_new_products.gsmnet_new_products}}{% else %}-{% endif %}</b></div>
+
+                <div class="stat-item">
+                    <h6>Sep Mobile </h6> <b>{% if weekly_new_products %}{{weekly_new_products.sep_mobile_new_products}}{% else %}-{% endif %}</b></div>
+
+                <div class="stat-item">
+                    <h6>Distrizone</h6> <b>{% if weekly_new_products %}{{weekly_new_products.distrizone_new_products}}{% else %}-{% endif %}</b></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block javascript %}
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.charts-sparkline.js' %}"></script>
+
+    <script src="{% static 'plugins/bower_components/raphael/raphael-min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/morrisjs/morris.js' %}"></script>
+    <script src="{% static 'js/dashboard1.js' %}"></script>
+
+{% endblock %}

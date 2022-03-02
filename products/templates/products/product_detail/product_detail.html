@@ -1,0 +1,271 @@
+{% extends 'products/base.html' %} {% load static %} {% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet"
+      type="text/css"/> {% endblock %} {% block stylesheet %} {% endblock %} {% block bodyblock %}
+
+<style>
+    .col_bottom {
+        margin-bottom: 0;
+    }
+    
+    .price-box {
+        /* background: #fbfbfb; */
+        display: flex;
+        align-items: center;
+        margin-bottom: 1em;
+        padding: .4em 1em;
+    }
+    
+    .price-box .space {
+        flex: auto;
+    }
+    
+    .price-box .p-badge {
+        background: #dec10b;
+        color: #fff;
+        font-size: 10px;
+        padding: 0 1em;
+        border-radius: 1em;
+        margin-left: 1em;
+    }
+    
+    .price-box .price-digit {
+        color: #ffffff;
+        font-weight: 700;
+    }
+    
+    .price-digit i {
+        color: #000 !important;
+    }
+    
+    .price-box .digit {
+        font-weight: 800;
+        font-size: 20px;
+    }
+    
+    .price-box .cal-box {
+        padding: 1em 1em !important;
+        /* width: 100%; */
+        /* margin: .5em 0; */
+        /*background: #d7ca77;*/
+        background: #aba583;
+        border-radius: 1em;
+        color: #ffffff;
+        width: 20%;
+    }
+    
+    .cal-box:last-child {
+        background: #f6d206;
+        width: 27%;
+    }
+    
+    .price-box h5:first-child {
+        color: #444;
+        /* border-bottom: 2px solid #dec10b; */
+    }
+    
+    .price-box h5:nth-child(3) {
+        font-size: 13px;
+        color: #dec10b;
+        font-weight: 700;
+    }
+    
+    .price-box h5:nth-child(3) i {
+        color: #444;
+    }
+    
+    .price-box .sub span {
+        color: #dec10b;
+        font-weight: 700;
+    }
+    
+    .price-box .sub i {
+        margin-left: .2em;
+        color: #444 !important;
+    }
+    
+    @media screen and (max-width:800px) {
+        .price-box {
+            /* flex-shrink: unset; */
+            flex-flow: column;
+            text-align: center;
+        }
+        .cal-box {
+            padding: 1em 2em !important;
+            width: 100%;
+            margin: .5em 0;
+            background: #f3f3f3;
+        }
+    }
+
+    .competitorsclasss {
+        margin-bottom: 10px;
+    }
+
+    .product_details_view_fetch_row {
+        margin-top: 20px;
+    }
+
+
+    .competitorsListNew td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsListNew th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+
+    .competitorsList td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        background: #298029!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedBackground {
+        background: #ff0000!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+
+
+    #dataTable tr td:nth-child(3){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 50px !important;
+        max-width: 150px !important;
+    }
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h3 class="box-title m-b-0">Product Detail</h3>
+            <hr>
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">{{product.name}}</h3></div>
+                <div class="col-lg-6 text-right"><h3 class="box-title m-b-0">
+                    {% if product.supplier %}
+                    <b>Supplier: </b>{{product.supplier.name}}
+                    {% endif %}
+                </h3></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'products/product_detail/price_calculation_view.html' %}
+{% include 'products/product_detail/competitors_list.html' %}
+{% include 'products/product_detail/fetch_product_details.html' %}
+
+
+{% endblock %}
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+
+<script>
+
+    function form_submit(){
+        site_reference = $('#competitor_site').val()
+        competitor_link = $('#competitor_link').val()
+        if (competitor_link == ''){
+            $('.error_div').html('Note: Competitor Link is compulsary');
+        }
+        else {
+            $.post("{% url 'products:add_product_competitor' %}",
+              {csrfmiddlewaretoken: '{{ csrf_token }}', competitor_id: site_reference, competitor_link: competitor_link, product_id: {{product.id}}},
+              function(data){
+                $('.error_div').empty();
+                $('.error_div').html('Added Successfully');
+                $('#competitor_link').val('');
+                $('#exampleModal').modal('toggle');
+
+                $('.competitorsclasss').remove();
+
+                for (var i=0; i<data.length; i++){
+                    $('.competitors_main_div').append('\
+                        <div class="row competitorsclasss" id="competitor'+data[i].id+'">\
+                            <div class="col-md-4">'+data[i].sitename+'</div>\
+                            <div class="col-md-4">'+data[i].sitelink+'</div>\
+                            <div class="col-md-4">\
+                                <button class="btn btn-danger" onClick="delete_competitor('+data[i].id+'    )">Delete</button>\
+                            </div>\
+                        </div>\
+                    ');
+                }
+
+              });
+        }
+    }
+
+    function delete_competitor(id){
+        $.post("{% url 'products:delete_product_competitor' %}",
+          {csrfmiddlewaretoken: '{{ csrf_token }}', id: id},
+          function(data){
+            $('#competitor' + id).remove();
+          });
+    }
+
+    function fetch_product_details(id){
+        $.post("{% url 'products:fetch_product_details' %}",
+          {csrfmiddlewaretoken: '{{ csrf_token }}', id: {{product.id}}},
+          function(data){
+            $('.product_details_view_fetch_row').remove();
+            for (var i=0; i<data.length; i++){
+                $('.product_details_view_fetch').append('\
+                    <div class="row product_details_view_fetch_row" style="font-weight: 700; ">\
+                        <div class="col-md-4">'+data[i].url+'</div>\
+                        <div class="col-md-4">'+data[i].original_price+'</div>\
+                        <div class="col-md-4">'+data[i].promotion_price+'</div>\
+                    </div>\
+                ');
+            }
+          });
+    }
+
+    function detail_view(){
+        $('.detail_view').toggle();
+    }
+    function competitors_view(){
+        $('.competitors_view').toggle();
+    }
+    $( "#exampleModalBtn" ).click(function() {
+        $('.error_div').empty();
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,303 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+#dataTable tr td:nth-child(3){
+word-wrap: break-word;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+min-width: 50px !important;
+max-width: 50px !important;
+}
+{% endblock %}
+{% block bodyblock %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-6"><h3 class="box-title m-b-0">Daily Competitor Links</h3></div>
+                <div class="col-6 text-right"><a class="btn btn-primary" href="/app/competitors_info/all_competitors_info">All Competitor Links</a></div>
+            </div>
+            <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+            <div class="table-responsive">
+
+
+
+                <table id="dataTable" class="display nowrap competitorsList" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onclick="selectAll()"></th>
+                        <th>Sr #</th>
+                        <th>SKU</th>
+                        <th>com.<br>name</th>
+                        <th>c. price</th>
+                        <th>cost</th>
+                        <th>margin</th>
+                        <th>link s.</th>
+                        <th>status</th>
+                        <th>last<br>price/date</th>
+                        <th>price<br>dif.</th>
+                        <th>last<br>check</th>
+                        <th>Smart<br>Price</th>
+                        <th>Categories</th>
+                        <th>product name</th>
+                        <th>link</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Sr #</th>
+                        <th>SKU</th>
+                        <th>com.<br>name</th>
+                        <th>c. price</th>
+                        <th>cost</th>
+                        <th>margin</th>
+                        <th>link s.</th>
+                        <th>status</th>
+                        <th>last<br>price/date</th>
+                        <th>price<br>dif.</th>
+                        <th>last<br>check</th>
+                        <th>Smart<br>Price</th>
+                        <th>Categories</th>
+                        <th>product name</th>
+                        <th>link</th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+
+
+                <div class="text-right">
+                    <button class="btn btn-primary" onclick="updateData()">Update</button>
+                    <div>
+                        <span class="error_div" style="color: red"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div aria-labelledby="exampleModalLabel1" class="modal fade" id="confirmationModal" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmit()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- /.row -->
+
+<style>
+    #page-wrapper{
+        width: 100% !important;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        background: #298029!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedBackground {
+        background: #ff0000!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+<script>
+    // $('#dataTable').DataTable({});
+    function selectAll() {
+        if ( document.getElementById('selectAll').checked ) {
+            console.log('1');
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+            // $('.checkboxSelect').prop('checked', true);
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+    function updateData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+        $('#confirmationModal').modal('show');
+    }
+    function formSubmit() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $.ajax({
+            type: "POST",
+            url: "/webservices/PodcastService.asmx/CreateMarkers",
+            data: JSON.stringify({ idsArray: idsArray, csrfmiddlewaretoken: '{{ csrf_token }}' }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data){
+                $('#confirmationModal').modal('toggle');
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+</script>
+
+<script>
+    $('#dataTable').DataTable({
+        dom: '<"top"Bf>rt<"bottom"lp><"clear">'
+        , buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        "processing": true,
+        serverSide: true,
+        ajax: {
+            url: '{% url 'products:competitors_info' %}',
+            data: function ( d ) {
+                d.csrfmiddlewaretoken = '{{ csrf_token }}';
+            },
+            type: 'POST'
+        },
+        "columns": [
+            { "data": "", "orderable": false,
+                'render': function (data, type, full, meta){
+                    // console.log('data', data);
+                    // console.log('type', type);
+                    // console.log('full', full);
+                    // console.log('meta', meta);
+                    if ( full.sr_no ) {
+                        return '<input type="checkbox" class="checkboxSelect" id="' + $('<div/>').text(full.sr_no).html() + '">';
+                    } else {
+                        return '';
+                    }
+                }
+            },
+            { "data": "sr_no", "orderable": false},
+            { "data": "sku", "orderable": false },
+            { "data": "competitor_name", "orderable": false },
+            { "data": "price", "orderable": false },
+            { "data": "cost", "orderable": false },
+            { "data": "margin", "orderable": false },
+            { "data": "link_status", "orderable": false },
+            { "data": "stock", "orderable": false },
+            { "data": "last_price_date", "orderable": false },
+            { "data": "price_diff", "orderable": false },
+            { "data": "last_check", "orderable": false },
+            { "data": "smart_price", "orderable": false },
+            { "data": "categories", "orderable": false },
+            { "data": "name", "orderable": false },
+            { "data": "link", "orderable": false }
+        ],
+        "createdRow": function ( row, data, index ) {
+            // console.log('row', row);
+            // console.log('data', data);
+            // console.log('index', index);
+            if ( data.sr_no === '' && data.sku === '' && data.categories === '' && data.name === '' && data.competitor_name === '' && data.price === '' &&
+                data.cost === '' && data.margin === '' && data.link_status === '' && data.stock === '' && data.last_price_date === '' && data.price_diff === '' &&
+                data.last_check === '' && data.link === '' ) {
+                    $('td', row).addClass('divider');
+                    return
+            }
+            if ( data.margin < 0 ) {
+                $('td', row).eq(7).addClass('bgRed');
+            }
+            if ( data.price_diff < data.cost ) {
+                $('td', row).eq(12).addClass('colorRed');
+                $('td', row).eq(5).addClass('colorRed');
+            }
+            if ( data.price_diff > data.cost ) {
+                $('td', row).eq(12).addClass('colorGreenBackground');
+            }
+            if ( data.link_status !== 'Active' && data.link_status !== 'active' ) {
+                $('td', row).eq(9).addClass('colorDark');
+            }
+            if ( data.stock !== 'in stock' && data.link_status !== 'in stock' ) {
+                $('td', row).eq(10).addClass('colorRedNoStock');
+            }
+        },
+    });
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends 'products/base.html' %} {% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet"
+      type="text/css"/>
+
+<link href="{% static 'plugins/bower_components/custom-select/custom-select.css' %}" rel="stylesheet" type="text/css"/>
+<link href="{% static 'plugins/bower_components/switchery/dist/switchery.min.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}" rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css' %}"
+      rel="stylesheet"/>
+<link href="{% static 'plugins/bower_components/multiselect/css/multi-select.css' %}" rel="stylesheet" type="text/css"/>
+<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bower_components/typeahead.js-master/dist/typehead-min.css' %}"
+      rel="stylesheet"> {% endblock %}
+
+{% block stylesheet %}
+    button.dt-button, div.dt-button, a.dt-button
+    {
+        background: #03a9f3 !important; color: #ffffff !important; border-color: #03a9f3 !important;
+    }
+    #page-wrapper{
+        width: 100% !important;
+    }
+
+    .nav-pills .nav-item.show .nav-link, .nav-pills .nav-link.active {
+        background: #fedd00;
+    }
+    .dataTable > thead > tr > th[class*="sort"]:before,
+    .dataTable > thead > tr > th[class*="sort"]:after {
+        content: "" !important;
+    }
+
+    .dataTable {
+        font-size: 13px;
+    }
+
+    table.dataTable thead th{
+        padding: 20px 18px !important;
+        border-bottom: 1px solid #111;
+        background: #808080 !important;
+        color: #000e32 !important;
+        font-size: 16px !important;
+    }
+
+    table.dataTable thead th, table.dataTable tbody td  {
+        text-align: center;
+    }
+{% endblock %}
+
+{% block bodyblock %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="box-title m-b-2">All Rules</h3>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a class="btn btn-primary" href="/app/rules/add">Add New Rule</a>
+                </div>
+                <div class="col-md-12 mt-4">
+                    <ul class="nav nav-pills nav-fill">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#LOCAL_COST" role="tab">LOCAL COST
+                                SUPPLIER RULE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#THENX_COST" role="tab">THENX COST SUPPLIER
+                                RULE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#VAT_PRICE" role="tab">VAT PRICE IS SET AS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#WARRANTY_RULES" role="tab">WARRANTY RULES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#MARGIN_RULES" role="tab">MARGIN RULES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#COMPETITOR_RULES" role="tab">COMPETITOR RULES</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div aria-labelledby="LOCAL_COST-tab" class="tab-pane fade show active" id="LOCAL_COST"
+                             role="tabpanel">
+                            {% include 'products/rules_viewer/local_cost_viewer.html' %}
+                        </div>
+                        <div aria-labelledby="THENX_COST-tab" class="tab-pane fade" id="THENX_COST" role="tabpanel">
+                            {% include 'products/rules_viewer/thenx_cost_viewer.html' %}
+                        </div>
+                        <div aria-labelledby="VAT_PRICE-tab" class="tab-pane fade" id="VAT_PRICE" role="tabpanel">
+                            {% include 'products/rules_viewer/vat_viewer.html' %}
+                        </div>
+                        <div aria-labelledby="WARRANTY_RULES-tab" class="tab-pane fade" id="WARRANTY_RULES"
+                             role="tabpanel">
+                            {% include 'products/rules_viewer/warranty_viewer.html' %}
+                        </div>
+                        <div aria-labelledby="MARGIN_RULES-tab" class="tab-pane fade" id="MARGIN_RULES" role="tabpanel">
+                            {% include 'products/rules_viewer/margin_viewer.html' %}
+                        </div>
+                        <div aria-labelledby="MARGIN_RULES-tab" class="tab-pane fade" id="COMPETITOR_RULES" role="tabpanel">
+                            {% include 'products/rules_viewer/competitor_rule_viewer.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %} {% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+
+<script src="{% static 'js/custom.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/switchery/dist/switchery.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/custom-select/custom-select.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'plugins/bower_components/multiselect/js/jquery.multi-select.js' %}"
+        type="text/javascript"></script>
+
+<script src="{% static 'plugins/bower_components/typeahead.js-master/dist/typeahead.bundle.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/typeahead.js-master/dist/typeahead-init.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@v2.3.7/dist/latest/bootstrap-autocomplete.min.js"></script>
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+
+
+<!-- end - This is for export functionality only -->
+<script>
+    $('#dataTable').DataTable({searching: false, "lengthMenu": [[500, 1000], [500, 1000]]});
+    $('#dataTable2').DataTable({searching: false, "lengthMenu": [[500, 1000], [500, 1000]]});
+    $('#localcostdataTable').DataTable({searching: false, "lengthMenu": [[500, 1000], [500, 1000]]});
+    $('#thenxcostdataTable').DataTable({searching: false, "lengthMenu": [[500, 1000], [500, 1000]]});
+
+    // For deleting rule
+    function delete_rule(id){
+        $.post("{% url 'products:delete_rule' %}",
+          {id: id, csrfmiddlewaretoken: '{{ csrf_token }}'},
+          function(data, status){
+            alert("deleted");
+            $('#rule' + id).remove();
+        });
+    };
+
+    function delete_all_rules(rule_type){
+        $.post("{% url 'products:delete_all_rule' %}",
+          {rule_type: rule_type, csrfmiddlewaretoken: '{{ csrf_token }}'},
+          function(data, status){
+            alert("deleted");
+            location.reload();
+        });
+    }
+
+
+        $('#local_cost_supplier_linker_original').change(function() {
+            var value = $(this).val();
+            $('#local_cost_supplier_linker').val(value);
+        });
+        $('#thenx_cost_supplier_linker_original').change(function() {
+            var value = $(this).val();
+            $('#thenx_cost_supplier_linker').val(value);
+        });
+
+
+
+</script>
+{% endblock %}

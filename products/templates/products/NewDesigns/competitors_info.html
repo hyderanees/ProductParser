@@ -1,0 +1,630 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<!--<link rel="stylesheet" href="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.css' %}">-->
+
+{% endblock %}
+
+{% block bodyblock %}
+<style>
+     #page-wrapper{
+        width: 100% !important;
+    }
+
+    .dark-heading {
+        color: black;
+        font-weight: 500;
+        font-size: 1.4em!important;
+    }
+
+    .filter-button {
+        background: #fedd00;
+        border: 1px solid #fedd00;
+        padding-left: 3em;
+        padding-right: 3em;
+    }
+
+    .form_class {
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .all-cost-price {
+        background: #fedd00!important;
+        font-weight: 300;
+    }
+
+    .whole-cost-price {
+        color: #92cc66!important;
+        font-weight: 300;
+    }
+
+    .smart-price {
+        background: #70ad47!important;
+        font-weight: 300;
+    }
+
+    .cheap-price {
+        font-weight: 100;
+    }
+
+    .margin-color {
+        color: #000!important;
+        font-weight: 300;
+    }
+
+    .table-heading {
+        color: #fff;
+        font-weight: 700;
+        background: #808080;
+    }
+
+    .table-heading th{
+        color: #fff;
+        font-weight: 700;
+        vertical-align: middle !important;
+        text-align: center!important;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        background: #808080;
+    }
+
+    .table-body td {
+        color: #a18080;
+        font-size: 13px;
+        font-weight: 200;
+        text-align: center!important;
+        vertical-align: top !important;
+    }
+
+    .table-body td {
+        border: 0.5px solid #efeaea;
+    }
+
+    #header-fixed {
+        position: fixed;
+        top: 0px; display:none;
+        background-color:white;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .table-responsive {
+      display: inline-block;
+      height: 60vh;
+      overflow: auto
+    }
+
+    .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover,
+        .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+        background-color: #fedd00;
+        border-color: #fedd00;
+    }
+
+     .ofifty {
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 150px !important;
+        max-width: 150px !important;
+    }
+    .twohnd{
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 200px !important;
+        max-width: 200px !important;
+    }
+
+    .t70 {
+        min-width: 20px !important;
+        max-width: 70px !important;
+    }
+
+    .table tr td {
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #header-fixed {
+        position: fixed;
+        top: 0px; display:none;
+        background-color:white;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .table-responsive {
+      display: inline-block;
+      height: 60vh;
+      overflow: auto
+    }
+
+    .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover,
+        .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+        background-color: #fedd00;
+        border-color: #fedd00;
+    }
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th,
+    .table>thead>tr>td, .table>thead>tr>th {
+        padding: 2px;
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        display: none;
+    }
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-8"><h3 class="box-title m-b-0  dark-heading">Daily Price</h3></div>
+                <div class="col-lg-4 text-right">
+                    <input class="form-control" type="text"
+                           id="product_val"
+                                    style="height: 25px;"
+                                   placeholder="Search  Product SKU"
+                                    value="{{product_val}}">
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <form id="form" class="form_class" method="POST" action="{% url 'products:competitors_info_new' %}">
+                    {% csrf_token %}
+                    <div class="col-lg-4">
+                        <h5 class="m-t-30 m-b-10 dark-heading">Select Filter Type</h5>
+                        <select class="form-control" name="filter1" id="filter1">
+                            <option value="0" {% if filter1 == 0 %} selected {% endif %}> All Competitor Links</option>
+                            <option value="1" {% if filter1 == 1 %} selected {% endif %}> Competitor Price Less Than Product Cost</option>
+                            <option value="2" {% if filter1 == 2 %} selected {% endif %}> No Stock Info</option>
+                            <option value="3" {% if filter1 == 3 %} selected {% endif %}> Updated On Server</option>
+                            <option value="4" {% if filter1 == 4 %} selected {% endif %}> Smart Price Overwrite</option>
+                        </select>
+
+                    </div>
+                    <input type="hidden" name="product" value="{{product_val}}" id="product_val_form">
+                    <div class="col-lg-4">
+
+                        <h5 class="m-t-30 m-b-10 dark-heading">Select Category</h5>
+                        <select class="form-control" data-style="form-control"
+                                name="filter2"  id="filter2">
+                            <option value="0" {% if filter2 == 0 %} selected {% endif %}> Only Changed Prices</option>
+                            <option value="1" {% if filter2 == 1 %} selected {% endif %}>All Competitors Link</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="limit" id="limit" value="{{limit}}">
+                    <input type="hidden" name="page" id="page" value="{{page}}">
+
+                    <div class="col-lg-4 text-left">
+                        <h5 class="m-t-30 m-b-10 dark-heading">Filter</h5>
+                            <button type="submit" class="btn btn-success filter-button"
+                                    id="filter_records_competitor">Filter Records
+                            </button>
+
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="dataTables_length" id="dataTable_length">
+                        <label>Show
+                            <select name="dataTable_length" aria-controls="dataTable" class="" id="table-limit">
+                                <option {% if limit == 500 %} selected {% endif %} value="500" >500</option>
+                                <option {% if limit == 1000 %} selected {% endif %} value="1000" >1000</option>
+                            </select>
+                            entries</label>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-right">
+
+                    <button class="btn btn-primary" onclick="formSubmitUpdateAllCompetitors()">Update All Information</button>
+                    <button class="btn btn-primary" onclick="updateData()">Update</button>
+                    <button class="btn btn-danger" onclick="deleteData()">Delete</button>
+                    <div>
+                        <span class="error_div" style="color: red"></span>
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div class="table-responsive" style="margin-top: 40px;">
+                <table class="table" id="table-1">
+                    <thead>
+                        <tr class="table-heading">
+                            <th class="t70" style="min-width: 40px;"><input type="checkbox" id="selectAll" onclick="selectAll()"></th>
+                            <th class="t70">SKU</th>
+                            <th class="ofifty">Categories</th>
+                            <th class="twohnd">Product Name</th>
+                            <th class="t70">Competitor<br>Name</th>
+                            <th class="t70">C. <br>Price</th>
+                            <th class="t70">All<br>Cost<br>Price</th>
+                            <th class="t70">Price<br>diff.</th>
+                            <th class="smart-price t70">Smart<br>Price</th>
+                            <th class="t70">status</th>
+                            <th class="t70">margin</th>
+                            <th class="ofifty">Last Competitor<br>price & date</th>
+                            <th class="ofifty">last all cost<br>price & date</th>
+                            <th class="t70">Link<br>Status</th>
+                            <th class="t70">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if competitor_query_set_ %}
+                            {% for obj in competitor_query_set_ %}
+                                {% with length=obj.competitors_list|length|add:"1" %}
+                                    <tr class="table-body">
+                                        <td rowspan="{{length}}" style="border: none;border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;min-width: 40px;">
+                                            <input type="checkbox" class="checkboxSelect" id="{{obj.id}}"></td>
+                                        <td class="t70" rowspan="{{length}}" style="border: none;border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;"><a href="/app/products/detail/{{obj.reference_id}}/">{{obj.sku}}</a></td>
+                                        <td class="ofifty" rowspan="{{length}}" style="border: none;border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;">{{obj.categories}}</td>
+                                        <td class="twohnd" rowspan="{{length}}" style="border: none;border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;">{{obj.name}}</td>
+                                        <td class="t70" {% if obj.is_cheapest %}style="color:red"{% endif %}>{{obj.competitor_name}}</td>
+                                        <td class="t70" {% if obj.is_cheapest %}style="color:red"{% endif %}>{{obj.price}}</td>
+                                        <td class="t70" rowspan="{{length}}" style="font-weight: bolder;border-top:1px solid #9c9a9a;border-bottom:1px solid #9c9a9a;">{{obj.all_cost_price}}</td>
+                                        <td class="t70" {% if obj.is_cheapest %}style="color:red"{% endif %}>{{obj.price_diff}}</td>
+                                        <td class="t70" style="font-weight: bolder;background: #fff2cc;">{{obj.smart_price}}</td>
+                                        <td class="t70" {% if obj.stock == 'in stock' %}style="color:green"{% endif %}>{{obj.stock}}</td>
+                                        <td class="t70" rowspan="{{length}}" style="border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;{% if obj.margin_neg_condition %}color:red;{% endif %}">{{obj.margin}}</td>
+                                        <td class="ofifty">-</td>
+                                        <td class="ofifty" rowspan="{{length}}" style="border-top: 1px solid #9c9a9a;border-bottom: 1px solid #9c9a9a;">{{obj.old_all_cost_price}}</td>
+                                        <td class="t70">{{obj.link_status}}</td>
+                                        <td class="t70"><a href="{{obj.link}}">{{obj.link}}</a></td>
+                                    </tr>
+
+                                    {% for obj2 in obj.competitors_list %}
+                                         <tr class="table-body">
+                                            <td class="ofifty" style="{% if obj2.is_cheapest %}color:red;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.competitor_name}}</td>
+                                            <td class="t70" style="{% if obj2.is_cheapest %}color:red;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.price}}</td>
+                                            <td class="t70" style="{% if obj2.is_cheapest %}color:red;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.price_diff}}</td>
+                                            <td class="t70" style="font-weight: bolder;{% if obj2.smart_price %}background:#feff00;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}"
+                                            {% if forloop.first %}onClick="smart_price_popup_check({{obj.id}});"{% endif %}>
+                                                <span {% if forloop.first %}id="smart_price_{{obj.id}}"{% endif %}>{{obj2.smart_price}}</span></td>
+                                            <td class="t70" style="{% if obj2.stock == 'in stock' %}color:#70ad94;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.stock}}</td>
+                                            <td class="ofifty" style="{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.last_check}}</td>
+                                            <td class="t70" style="{% if obj2.link_status == 'inactive' %}color:#a6bad4;{% endif %}{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}">{{obj2.link_status}}</td>
+                                             <td class="t70" style="{% if forloop.last %}border-bottom:1px solid #9c9a9a;{% endif %}"><a href="{{obj2.link}}">{{obj2.link}}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% else %}
+                        <tr><td colspan="15" style="text-align: center"><h4>No Data Available!</h4></td></tr>
+                        {% endif %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6"></div>
+                <div class="col-lg-6 text-right">
+                {% if competitor_query_set.has_other_pages %}
+                    <ul class="pagination">
+                          {% if competitor_query_set.number|add:'-4' > 1 %}
+                            <li><a class="href_link" onclick="pageClick(1);">1</a></li>
+                            <li><a class="href_link" onclick="pageClick({{ competitor_query_set.number|add:'-5' }});">&hellip;</a></li>
+                          {% endif %}
+                          {% for i in competitor_query_set.paginator.page_range %}
+                            {% if competitor_query_set.number == i %}
+                                <li class="active"><span>{{ i }}</span></li>
+                            {% elif i > competitor_query_set.number|add:'-3' and i < competitor_query_set.number|add:'3' %}
+                                <li><a class="href_link" onclick="pageClick({{ i }});">{{ i }}</a></li>
+                              {% endif %}
+                          {% endfor %}
+                          {% if competitor_query_set.paginator.num_pages > competitor_query_set.number|add:'4' %}
+                            <li><a class="href_link" onclick="pageClick({{ competitor_query_set.number|add:'5' }});">&hellip;</a></li>
+                            <li><a class="href_link" onclick="pageClick({{ competitor_query_set.paginator.count }});">{{ competitor_query_set.paginator.count }}</a></li>
+                          {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel1" class="modal fade" id="confirmationModal" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmit()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel13" class="modal fade" id="confirmationModalAllInfo" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel13">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update all competitor links?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmitUpdateAllCompetitors()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel14" class="modal fade" id="detailOfProduct" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel14">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update all competitor links?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmitUpdateAllCompetitors()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel2" class="modal fade" id="confirmationModalDelete" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="deleteformSubmit()" type="button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="DescModal" role="dialog">
+    <div class="modal-dialog" style="margin: 10% auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                 <h3 class="modal-title">Update Smart Price</h3>
+
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="smartPrice" id="sid" value="">
+                <input type="text" name="smartPrice" id="smart_Price" value="">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn1" class="btn btn-default" >Apply!</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+<!--<script src="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.js' %}"></script>-->
+<!--<script src="{% static 'plugins/bower_components/bootstrap-table/dist/extensions/export/bootstrap-table-export.js' %}"></script>-->
+<script src="{% static 'plugins/bower_components/waypoints/lib/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'plugins/bower_components/waypoints/lib/shortcuts/infinite.min.js' %}"></script>
+
+<script type="text/javascript">
+    $('#table-limit').change(function () {
+        var value = this.value;
+        $('#limit').val(value);
+        $('#page').val(1);
+        submit_form();
+    });
+
+    function pageClick(page) {
+        $('#page').val(page);
+        submit_form();
+    }
+
+    function submit_form() {
+        $('#form').submit();
+    }
+
+    $('#product_val').change(function() {
+        var value = $(this).val();
+        $('#product_val_form').val(value);
+    });
+
+
+    function selectAll() {
+        if ( document.getElementById('selectAll').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+
+    function selectAllAgain() {
+        if ( document.getElementById('selectAllagain').checked ) {
+            console.log('1')
+            $('.checkboxSelect').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+        } else {
+            $('.checkboxSelect').prop('checked', false);
+        }
+    }
+    function updateData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/update_competitor_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                alert("Updated Successfully! Reload Page Now");
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function deleteData() {
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+        $('.error_div').empty();
+        if ( idsArray.length === 0 ) {
+            $('.error_div').html('Please select links');
+            return;
+        }
+
+        var idsArray = [];
+        $('.checkboxSelect:checked').each(function() {
+            idsArray.push(this.id);
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/app/delete_competitor_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ idsArray: idsArray}),
+            dataType: "json",
+            success: function(data){
+                alert("Removed Successfully! Reload Page Now");
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function formSubmitUpdateAllCompetitors() {
+        filter_type = $('#filter1').val();
+        filter_type2 = $('#filter2').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/app/update_all_competitor_info",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ info: 'info', filter_type: filter_type, filter_type2: filter_type2}),
+            dataType: "json",
+            success: function(data){
+                alert("Updated Successfully! Reload Now");
+            },
+            error: function(errMsg) {
+            }
+        });
+    }
+
+    function smart_price_popup_check(id){
+        $('#DescModal').modal("show");
+        smart_price_identity = '#smart_price_' + id;
+        var price = $(smart_price_identity).html();
+        if (price==''){
+            price=0;
+        }
+        $('#smart_Price').val(price)
+        $('#sid').val(id)
+    }
+
+
+    $("#btn1").click(function(){
+        var smartPrice=$('#smart_Price').val() ;
+        var sid= $('#sid').val() ;
+        smart_price_id = '#smart_price_' + sid;
+        console.log(smart_price_id);
+        $.ajax({
+            type: "POST",
+            url: "/app/update_smart_price",
+            headers:{
+                "X-CSRFToken": '{{ csrf_token }}'
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({sPrice: smartPrice, sid:sid}),
+            dataType: "json",
+            success: function(data){
+                $(smart_price_id).html(smartPrice);
+                $('#DescModal').modal('hide');
+            },
+            error: function(errMsg) {
+            }
+        });
+    });
+
+
+</script>
+
+{% endblock %}

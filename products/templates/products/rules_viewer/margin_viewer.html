@@ -1,0 +1,404 @@
+
+
+<script>
+    function openModalMarginDetails(rule_id) {
+
+        supplier_val = $('#supplier_value_' + rule_id).val();
+        category_val = $('#category_value_' + rule_id).val();
+        product_val = $('#product_value_' + rule_id).val();
+        bool_val = $('#boolean_value_' + rule_id).val();
+
+        if (bool_val == 'True' || bool_val == 'true') {
+            $('#association_margin').val('Category');
+            $('#category_margin_div').show();
+            $('#product_margin_div').hide();
+        }
+        else {
+            $('#product_margin_div').show();
+            $('#category_margin_div').hide();
+            $('#association_margin').val('Product');
+        }
+
+        $('#supplier_margin').val(supplier_val);
+        $('#category_margin').val(category_val);
+        $('#product_margin').val(product_val);
+        $('#modalMarginDetails').modal('toggle');
+    }
+    function formDetailSubmit() {
+        $('#modalMarginDetails').modal('toggle');
+    }
+
+    function margin_filter(){
+        supplier = $('#supplier_select_margin').val();
+        category  = $('#category_select_margin').val();
+        product = $('#product_select_margin').val();
+
+        $.post("{% url 'products:filter_costs_viewer' %}",
+          {csrfmiddlewaretoken: '{{ csrf_token }}', category: category, supplier: supplier, product: product, islcp: 2},
+          function(data){
+            $('.margin_inner_rows').remove();
+
+            console.log(data.length);
+
+            for (var i =0; i<data.length; i++ ){
+                console.log(data[i]);
+                supplier_ = data[i].supplier;
+                category_ = data[i].category;
+                product_ = data[i].product;
+
+                if (category_ == ''){
+                    category_ = '-'
+                }
+                if (product_ == 'False' || product_ == 'false' || product_ == false){
+                    product_ = '-'
+                }
+
+                $('.margin_main_row').append('\
+                    <tr id="rule'+i+'" class="margin_inner_rows"> \
+                        <td>'+data[i].rule_id+'</td> \
+                        <td onclick="openModalMarginDetails('+i+')" style="cursor: pointer">'+data[i].margin_type+'</td> \
+                        <td> \
+                            <input type="hidden" id="supplier_value_'+i+'" value="'+data[i].supplier+'"> \
+                            <input type="hidden" id="category_value_'+i+'" value="'+data[i].category+'"> \
+                            <input type="hidden" id="product_value_'+i+'" value="'+data[i].product+'"> \
+                            <input type="hidden" id="boolean_value_'+i+'" value="'+data[i].is_category+'"> \
+                            '+data[i].percentage+' \
+                        </td> \
+                        <td>'+data[i].percentage_unit+'</td> \
+                        <td>'+data[i].supplier+'</td> \
+                        <td>'+category_+'</td> \
+                        <td>'+product_+'</td> \
+                        <td>'+data[i].price_dependancy+'</td> \
+                        <td>'+data[i].higher_price_val+'</td> \
+                        <td>'+data[i].price_dependancy2+'</td> \
+                        <td>'+data[i].lower_price_val+'</td> \
+                        <td>'+data[i].created_at+'</td> \
+                        <td style="display: inline-flex"> \
+                            <button class="btn btn-primary" style="font-size: 9px; padding: 0.8rem 0.6rem; margin-right: 5px;" onClick="editMarginRule('+data[i].rule_id+')">Edit</button> \
+                            <button class="btn btn-warning" style="font-size: 9px; padding: 0.8rem 0.6rem" onClick="delete_rule('+data[i].rule_id+')">Delete</button></td> \
+                    </tr> ');
+            };
+
+            let length = ($('.margin_main_row .margin_inner_rows').length).toString();
+            if (length == 0 )
+            {
+                $('.margin_main_row').append('<div class="row margin_inner_rows">\
+                    <div class="col-sm-12">\
+                        <div class="white-box">\
+                            <div class="row">\
+                                No Record Found\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>');
+            }
+        });
+    };
+
+    function editMarginRule(rule_id){
+        url = '/app/get_rule_detail?rule_id=' + rule_id;
+        $.get(url,
+          function(data, status){
+            document.getElementById('margin_type').value = data.margin_type_int;
+            document.getElementById('margin_price').value = data.percentage;
+            document.getElementById('margin_price_unit').value = data.percentage_unit_int;
+            document.getElementById('rule_identity').value = data.rule_id;
+
+            document.getElementById('lower_percentage_dependancy').value = data.price_dependancy2;
+            document.getElementById('lower_percentage').value = data.lower_percentage;
+            document.getElementById('lower_percentage_unit').value = data.lower_percentage_unit_int.toString();;
+
+            document.getElementById('higher_percentage_dependancy').value = data.price_dependancy;
+            document.getElementById('higher_percentage').value = data.higher_percentage;
+            document.getElementById('higher_percentage_unit').value = data.higher_percentage_unit_int.toString();;
+        });
+        $('#marginviewerpopupedit').modal('show');
+    }
+
+    function submitMarginRule(){
+        margin_type = document.getElementById('margin_type').value;
+        margin_price = document.getElementById('margin_price').value;
+        margin_price_unit = document.getElementById('margin_price_unit').value;
+        rule_identity = document.getElementById('rule_identity').value;
+
+        price_dependancy2 = document.getElementById('lower_percentage_dependancy').value;
+        lower_percentage = document.getElementById('lower_percentage').value;
+        lower_percentage_unit_int = document.getElementById('lower_percentage_unit').value;
+        price_dependancy = document.getElementById('higher_percentage_dependancy').value;
+        higher_percentage = document.getElementById('higher_percentage').value;
+        higher_percentage_unit_int = document.getElementById('higher_percentage_unit').value;
+
+        bool_check = true;
+        if (margin_price == ""){
+            bool_check = false;
+        }
+
+        if (bool_check == true){
+            $.post("{% url 'products:edit_rule' %}",
+                {
+                    margin_type: margin_type,
+                    margin_price: margin_price,
+                    margin_price_unit: margin_price_unit,
+                    rule_identity: rule_identity,
+
+                    higher_percentage_unit_int: higher_percentage_unit_int,
+                    higher_percentage: higher_percentage,
+                    price_dependancy: price_dependancy,
+
+                    lower_percentage_unit_int: lower_percentage_unit_int,
+                    lower_percentage: lower_percentage,
+                    price_dependancy2: price_dependancy2,
+
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+              function(data, status){
+                alert("edited");
+                $('#marginviewerpopupedit').modal('toggle');
+                margin_filter();
+            });
+        }
+    }
+
+</script>
+
+<div class="row" style="margin-bottom: 20px;padding-left: 2%;">
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+        <select class="form-control" id="supplier_select_margin">
+            <option disabled selected> select</option>
+            <option value="0">All Suppliers</option>
+            {% for obj in suppliers %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    <div class="col-lg-3">
+
+        <h5 class="m-t-30 m-b-10">Select Category</h5>
+        <select class="form-control" data-style="form-control" id="category_select_margin">
+            <option disabled selected> select</option>
+            <option value="0">All Categories</option>
+            {% for obj in categories %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Type Product SKU</h5>
+        <div class="input-group">
+            <input class="form-control" id="product_select_margin" type="text">
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Fetch</h5>
+        <button class="btn btn-success" onClick="margin_filter();" id="filter_records_margin">Filter Records</button>
+        <button class="btn btn-danger" onClick="delete_all_rules(3);" id="delete_records_margin">Delete All Margin Rules</button>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <!-- <h3 class="box-title m-b-0">Margin Rules</h3>
+            <p class="text-muted m-b-30">Detail of all margin rules available</p>
+            <hr> -->
+            <div class="table-responsive">
+                <table cellspacing="0" class="table table-striped" id="dataTable2" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Margin<br>Type</th>
+                        <th>Margin<br>Percentage</th>
+                        <th>Margin<br></br>Unit</th>
+                        <th>Supplier</th>
+                        <th>Category</th>
+                        <th>SKU</th>
+                        <th>Higher<br>Percentage<br>Dynamic</th>
+                        <th>Higher<br>Price</th>
+                        <th>Lower<br>Percentage<br>Dependancy</th>
+                        <th>Lower<br>Price</th>
+                        <th>Rule Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="margin_main_row">
+                    {% for obj in margin_rules %}
+                    <tr id="rule{{obj.rule_id}}" class="margin_inner_rows">
+                        <td>{{obj.rule_id}}</td>
+                        <td onclick="openModalMarginDetails({{obj.rule_id}})" style="cursor: pointer">{{obj.margin_type}}</td>
+
+                        <td>
+                            <input type="hidden" id="supplier_value_{{obj.rule_id}}" value="{{obj.supplier}}">
+                            <input type="hidden" id="category_value_{{obj.rule_id}}" value="{{obj.category}}">
+                            <input type="hidden" id="product_value_{{obj.rule_id}}" value="{{obj.product}}">
+                            <input type="hidden" id="boolean_value_{{obj.rule_id}}" value="{{obj.is_category}}">
+                            {{obj.percentage}}
+                        </td>
+                        <td>{{obj.percentage_unit}}</td>
+                        <td>{% if obj.supplier %}{{obj.supplier}}{% else %}-{% endif %}</td>
+                        <td>{% if obj.category %}{{obj.category}}{% else %}-{% endif %}</td>
+                        <td>{% if obj.product %}{{obj.product}}{% else %}-{% endif %}</td>
+                        <td>{% if obj.price_dependancy %}{{obj.price_dependancy}}{% else %}-{% endif %}</td>
+                        <td>{{obj.higher_price_val}}</td>
+                        <td>{% if obj.price_dependancy2 %}{{obj.price_dependancy2}}{% else %}-{% endif %}</td>
+                        <td>{{obj.lower_price_val}}</td>
+                        <td>{{obj.created_at}}</td>
+                        <td style="display: inline-flex">
+                            <button class="btn btn-primary" style="font-size: 9px; padding: 0.8rem 0.6rem; margin-right: 5px;" onClick="editMarginRule({{obj.rule_id}})">Edit</button>
+                            <button class="btn btn-warning" style="font-size: 9px; padding: 0.8em 0.6 em" onClick="delete_rule({{obj.rule_id}})">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div aria-labelledby="exampleModalLabel123" class="modal fade" id="modalMarginDetails" role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog" role="document" style="margin-top: 15%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="exampleModalLabel1">Details</h4></div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="control-label">Supplier:</label>
+                                        <input class="form-control" id="supplier_margin" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Association With:</label>
+                                        <input class="form-control" id="association_margin" disabled>
+                                    </div>
+                                    <div class="form-group" id="category_margin_div">
+                                        <label class="control-label">Category:</label>
+                                        <input class="form-control" id="category_margin" disabled>
+                                    </div>
+                                     <div class="form-group" id="product_margin_div">
+                                        <label class="control-label">Product:</label>
+                                        <input class="form-control" id="product_margin" disabled>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="marginviewerpopup" class="modal fade" id="marginviewerpopupedit" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document" style="max-width: 800px;">
+        <div class="modal-content" style="position: absolute;width: 800px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div id="margin-rule-div">
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <h5 class="m-t-30 m-b-10">Select Margin Type</h5>
+                            <select class="form-control" data-style="form-control" name="margin_type" id="margin_type">
+                                 <option value="0">Whole Sale Price</option>
+                                <option value="1">Retail Price</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Set Percentage</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="margin_price" name="margin_price" placeholder="Enter Percentage"
+                                       type="text" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+                            <select class="form-control" data-style="form-control" name="margin_price_unit" id="margin_price_unit">
+                                <option value="1">RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Higher Percentage Dependancy</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="higher_percentage_dependancy" name="higher_percentage_dependancy" placeholder="Enter Percentage"
+                                       type="text" step="0.01">
+                            </div>
+                        </div>
+
+                         <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Higher Percentage</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="higher_percentage" name="higher_percentage" placeholder="Enter Percentage"
+                                       type="text" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+                            <select class="form-control" data-style="form-control" name="higher_percentage_unit" id="higher_percentage_unit">
+                                <option value="1">RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Lower Percentage Dependancy</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="lower_percentage_dependancy" name="lower_percentage_dependancy" placeholder="Enter Percentage"
+                                       type="text" step="0.01">
+                            </div>
+                        </div>
+
+                         <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Lower Percentage</h5>
+                            <div class="input-group">
+                                <input class="form-control" id="lower_percentage" name="lower_percentage" placeholder="Enter Percentage"
+                                       type="text" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4">
+                            <h5 class="m-t-30 m-b-10">Select Unit</h5>
+                            <select class="form-control" data-style="form-control" name="lower_percentage_unit" id="lower_percentage_unit">
+                                <option value="1">RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="error_div"></div>
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" type="button" onClick="submitMarginRule()">Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .sorting, .sorting_asc, .sorting_desc {
+        background : none!important;
+    }
+</style>
+
+

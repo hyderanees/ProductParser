@@ -1,0 +1,5 @@
+from .product_competitor_job_without_competitor import product_competitor_job_without_competitor
+
+
+def product_competitor_job_without_competitor_cr_job():
+    product_competitor_job_without_competitor()

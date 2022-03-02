@@ -1,0 +1,427 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/fixedheader/3.1.7/css/fixedHeader.dataTables.min.css" rel="stylesheet"
+      type="text/css"/>
+
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+
+{% endblock %}
+{% block bodyblock %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">New Product Details On Competitor Sites</h3></div>
+                <div class="col-lg-6 text-right">
+                </div>
+            </div>
+
+
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10 dark-heading">Select Competitor</h5>
+                        <select class="form-control" id="supplier_select_competitor">
+                            <option selected value="0"> All Competitors</option>
+                            <option value="1"> Service Pack</option>
+                            <option value="2"> Protableta</option>
+                            <option value="3"> Mokagsm</option>
+                            <option value="4"> Magazingsm</option>
+                            <option value="5"> Gsmnet</option>
+                            <option value="6"> Distrizone</option>
+                            <option value="7"> Sunnex</option>
+                            <option value="8"> Sepmobile</option>
+                        </select>
+
+                    </div>
+                    <div class="col-lg-3">
+
+                        <h5 class="m-t-30 m-b-10 dark-heading">Start Date</h5>
+                        <input class="form-control" data-style="form-control" id="category_select_competitor"
+                               type="date">
+                    </div>
+
+
+                    <div class="col-lg-3">
+
+                        <h5 class="m-t-30 m-b-10 dark-heading">End Date</h5>
+                        <input class="form-control" data-style="form-control" id="product_select_competitor"
+                               type="date">
+                    </div>
+                    <div class="col-lg-3">
+                        <h5 class="m-t-30 m-b-10">Fetch</h5>
+                        <button class="btn btn-success" id="filter_records_competitor"  style="margin-top: 8px;"
+                                onClick="resetAndFetchData();">
+                            Filter Records
+                        </button>
+                    </div>
+                </div>
+
+
+            <div class="table-responsive">
+
+                <div id="dataTableMain">
+                    <table cellspacing="0" class="display nowrap competitorsList" id="dataTable" width="100%">
+                        <thead>
+                        <tr class="table-heading">
+                            <th>Sr #.</th>
+                            <th>Featured <br> Image</th>
+                            <th>Title</th>
+                            <th>Original <br> Price</th>
+                            <th>Promotional <br> Price</th>
+                            <th>Competitor</th>
+                            <th>Created At</th>
+                            <th>Link</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr class="table-heading">
+                            <th>Sr #.</th>
+                            <th>Featured <br> Image</th>
+                            <th>Title</th>
+                            <th>Original <br> Price</th>
+                            <th>Promotional <br> Price</th>
+                            <th>Competitor</th>
+                            <th>Created At</th>
+                            <th>Link</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!--                <div class="text-right"  style="margin-bottom: 20px;">-->
+                <!--                    <button class="btn btn-primary" onclick="formSubmitAllUpdate()">Update All Information</button>-->
+                <!--                    <button class="btn btn-primary" onclick="updateData()">Update Info</button>-->
+                <!--                    <button class="btn btn-danger" onclick="deleteData()">Delete</button>-->
+                <!--                    <div>-->
+                <!--                        <span class="error_div" style="color: red"></span>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel2" class="modal fade" id="confirmationModalDelete" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" onClick="deleteformSubmit()" type="button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="DescModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">X</button>
+                <h3 class="modal-title">Update Smart Price</h3>
+
+            </div>
+            <div class="modal-body">
+                <input id="sid" name="smartPrice" type="hidden" value="">
+                <input id="smart_Price" name="smartPrice" type="text" value="">
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="btn1" type="button">Apply!</button>
+                <button class="btn btn-primary" data-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div aria-labelledby="exampleModalLabel1" class="modal fade" id="confirmationModal" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update these changes?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmit()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-labelledby="exampleModalLabel12" class="modal fade" id="confirmationModalAllUpdate" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel12">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div>
+                    <p>Are you sure you want to update all values?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" onClick="formSubmitAllUpdate()" type="button">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+ #page-wrapper{
+        width: 100% !important;
+    }
+
+    .top {
+        margin-top: 45px;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        color: #298029!important;
+    }
+    .competitorsList .colorRedBackground {
+        color: #f89292!important;
+    }
+    .dt-buttons {
+        float: right !important;
+    }
+    .competitorsList .colorYellowBackground {
+        background: yellow !important;
+        color: black!important;
+        font-weight:600!important;
+    }
+
+
+    #dataTable tr td:nth-child(8){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 30px !important;
+        max-width: 30px !important;
+    }
+
+
+    #dataTable tr td:nth-child(3){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 100px !important;
+        max-width: 100px !important;
+    }
+
+
+    .dark-heading {
+        color: black;
+        font-weight: 500;
+        font-size: 1.4em!important;
+    }
+
+    .table-heading {
+        color: #fff;
+        font-weight: 700;
+        background: #808080;
+    }
+
+    .table-heading th{
+        color: #fff;
+        font-weight: 700;
+        vertical-align: middle!important;
+        text-align: center!important;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        background: #808080;
+    }
+
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .table-responsive {
+      display: inline-block;
+      overflow: auto
+    }
+
+    .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover,
+        .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+        background-color: #fedd00;
+        border-color: #fedd00;
+    }
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th,
+    .table>thead>tr>td, .table>thead>tr>th {
+        padding: 2px;
+    }
+    .table-responsive::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    table tbody td {
+        color: #a18080;
+        font-size: 13px;
+        font-weight: 200;
+        text-align: center!important;
+        vertical-align: middle!important;
+    }
+
+    table tbody td {
+        border: 1px solid #d0cece;
+    }
+
+
+
+
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+<script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script>
+
+<script>
+    getTableData();
+
+    function resetAndFetchData() {
+        this.getTableData();
+    }
+    function getTableData(){
+        supplier = $('#supplier_select_competitor').val();
+        category  = $('#category_select_competitor').val();
+        product = $('#product_select_competitor').val();
+
+
+        $('#dataTable').DataTable({
+            dom: '<"top"lB>rt<"bottom"lp><"clear">',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            "lengthMenu": [[500, 1000], [500, 1000]],
+            "processing": true,
+            serverSide: true,
+            destroy: true,
+            ajax: {
+                // url: '{% url 'products:get_new_product_details' %}',
+                url: '/app/new_product_details',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    d.competitor = supplier;
+                    d.start_date = category;
+                    d.end_date = product;
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "sr_no", "orderable": false},
+                { "data": "image", "orderable": false,
+                    "render": function ( data, type, full ) {
+                        return '<img style="width: 100px; height: 150px;" src="'+full.image+'" />';
+                    }},
+                { "data": "title", "orderable": false,
+                    "render": function ( data, type, full ) {
+                        return '<a href="'+full.href+'">'+data+'</a>';
+                    }},
+                { "data": "original_price", "orderable": false },
+                { "data": "promotional_price", "orderable": false },
+                { "data": "competitor", "orderable": false },
+                { "data": "created_at", "orderable": false },
+                 { "data": "", "orderable": false,
+                    "render": function ( data, type, full ) {
+                        return '<a target="_blank" href="'+full.href+'">'+full.href+'</a>';
+                    }},
+            ],
+        });
+         var table = $('#dataTable').DataTable();
+
+    };
+
+</script>
+
+
+{% endblock %}

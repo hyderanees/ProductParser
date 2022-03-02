@@ -1,0 +1,471 @@
+
+<div class="row" style="margin-bottom: 20px;">
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Select Supplier</h5>
+        <select class="form-control" id="supplier_select_competitor">
+            <option disabled selected> select</option>
+            <option value="0">All Suppliers</option>
+            {% for obj in suppliers %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    <div class="col-lg-3">
+
+        <h5 class="m-t-30 m-b-10">Select Category</h5>
+        <select class="form-control" data-style="form-control" id="category_select_competitor">
+            <option disabled selected> select</option>
+            <option value="0">All Categories</option>
+            {% for obj in categories %}
+            <option value="{{obj.id}}">{{obj.name.title}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Type Product SKU</h5>
+        <div class="input-group">
+            <input class="form-control" id="product_select_competitor" type="text">
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <h5 class="m-t-30 m-b-10">Fetch</h5>
+        <button class="btn btn-success" onClick="competitor_filter();" id="filter_records_competitor">Filter Records</button>
+        <button class="btn btn-danger" onClick="delete_all_rules(6);">Delete All Competitor Rules</button>
+    </div>
+</div>
+
+
+<div aria-labelledby="competitorviewerpopup" class="modal fade" id="competitorviewerpopupedit" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document" style="max-width: 1000px;">
+        <div class="modal-content" style="position: absolute;width: 1000px;">
+            <div class="modal-header">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel2">Confirmation!</h4></div>
+            <div class="modal-body">
+                <div id="competitor-rule-div">
+                    <div class="row">
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" disabled type="text" value="My Price Should Be">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" id="competitor_price" type="number" step="0.01" name="competitor_price" placeholder="Type Price">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+                            <select class="form-control" data-style="form-control" name="competitor_price_type" id="competitor_price_type">
+                                <option value="1">RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-4 col-md-4">
+                            <select class="form-control" data-style="form-control" name="competitor_price_first_priority" id="competitor_price_first_priority">
+                                <option value="1">Higher</option>
+                                <option value="2">Lower</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" disabled type="text" value="Than">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+                            <select class="form-control" data-style="form-control" name="competitor_price_second_priority" id="competitor_price_second_priority">
+                                <option value="1">Highest</option>
+                                <option value="2">Average</option>
+                                <option value="3">Cheapest</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" disabled type="text" value="OF">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+                            <select class="form-control" data-style="form-control" name="competitor_competitor_select" id="competitor_competitor_select">
+                                <option value="0">All Competitors</option>
+                                {% for obj in competitors_sites %}
+                                    <option value="{{obj.id}}">{{obj.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" disabled type="text" value="but it should not be lower than my final cost +">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-4 col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" step="0.01" type="number" name="competitor_cost" placeholder="Type Cost" id="competitor_cost">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+                              <select class="form-control" data-style="form-control" name="competitor_cost_type" id="competitor_cost_type">
+                                <option value="1">RON</option>
+                                <option value="2">Percent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-4 col-md-4">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="error_div"></div>
+                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" type="button" onClick="submitCompetitorRule()">Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% if competitors %}
+
+<div class="competitors_main_row">
+    {% for obj in competitors %}
+    <div class="row competitor_rows" id="rule{{obj.rule_id}}">
+        <div class="col-sm-12">
+            <div class="white-box" style="border: 1px solid #d3d1d1">
+                <div class="row ">
+                    <div class="col-lg-6">Rule # {{obj.rule_id}}</div>
+                    <div class="col-lg-6 text-right">
+                        <button class="btn btn-primary" onClick="editCompetitorRule({{obj.rule_id}})">Edit</button>
+                        <button class="btn btn-warning" onClick="delete_rule({{obj.rule_id}})">Delete</button>
+                    </div>
+                </div>
+                <hr>
+                    <div class="row">
+        <div class="form-group col-4 col-md-4">
+            <div class="input-group">
+                <input class="form-control" disabled type="text" value="My Price Should Be">
+            </div>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <div class="input-group">
+                <input class="form-control" type="text" disabled value="{{obj.check_price}}">
+            </div>
+        </div>
+
+        <div class="form-group col-2 col-md-2">
+            <div class="input-group">
+                <input class="form-control" type="text" disabled value="{{obj.check_price_unit}}">
+            </div>
+        </div>
+
+        <div class="form-group col-4 col-md-4">
+              <div class="input-group">
+                <input class="form-control" type="text" disabled value="{{obj.check_price_priority}}">
+            </div>
+        </div>
+    </div>
+        <div class="row">
+            <div class="form-group col-4 col-md-4">
+                <div class="input-group">
+                    <input class="form-control" disabled type="text" value="Than">
+                </div>
+            </div>
+
+            <div class="form-group col-2 col-md-2">
+                <div class="input-group">
+                    <input class="form-control" disabled type="text" value="{{obj.competitor_priority}}">
+                </div>
+            </div>
+
+            <div class="form-group col-2 col-md-2">
+                <div class="input-group">
+                    <input class="form-control" disabled type="text" value="OF">
+                </div>
+            </div>
+
+            <div class="form-group col-4 col-md-4">
+                <div class="input-group">
+                    <input class="form-control" disabled type="text" value="{{obj.competitor}}">
+                </div>
+            </div>
+        </div>
+            <div class="row">
+                <div class="form-group col-4 col-md-4">
+                    <div class="input-group">
+                        <input class="form-control" disabled type="text" value="but it should not be lower than my final cost +">
+                    </div>
+                </div>
+
+                <div class="form-group col-2 col-md-2">
+                    <div class="input-group">
+                        <input class="form-control" disabled type="text" value="{{obj.final_price_check}}">
+                    </div>
+                </div>
+
+                <div class="form-group col-2 col-md-2">
+                       <div class="input-group">
+                        <input class="form-control" disabled type="text" value="{{obj.final_price_unit}}">
+                    </div>
+                </div>
+
+                <div class="form-group col-4 col-md-4">
+
+                </div>
+            </div>
+
+                <div class="row">
+                    <div class="form-group col-4 col-md-4">
+                        <h5 class="m-t-30 m-b-10">Supplier</h5>
+                        <div class="input-group">
+                            <input class="form-control" disabled type="text" value="{{obj.supplier}}">
+                        </div>
+                    </div>
+
+                    <div class="form-group col-4 col-md-4">
+                        <h5 class="m-t-30 m-b-10">Association With</h5>
+                        <div class="input-group">
+                            <input class="form-control" disabled type="text"
+                                   value="{% if obj.is_category %}With Category{% else %}With Product{% endif %}">
+                        </div>
+                    </div>
+
+                    <div class="form-group col-4 col-md-4">
+                        <h5 class="m-t-30 m-b-10">{% if obj.is_category %}Category{% else %}Product{% endif %}</h5>
+                        <div class="input-group">
+                            <input class="form-control" disabled type="text"
+                                   value="{% if obj.is_category %}{{obj.category}}{% else %}{{obj.product}}{% endif %}">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+     <script>
+        function competitor_filter(){
+            supplier = $('#supplier_select_competitor').val();
+            category  = $('#category_select_competitor').val();
+            product = $('#product_select_competitor').val();
+
+            $.post("{% url 'products:filter_costs_viewer' %}",
+              {csrfmiddlewaretoken: '{{ csrf_token }}', category: category, supplier: supplier, product: product, islcp: 3},
+              function(data){
+                $('.competitor_rows').remove();
+
+                for (var i =0; i<data.length; i++ ){
+                    $('.competitors_main_row').append('\
+                        <div class="row competitor_rows" id="rule'+data[i].rule_id+'"> \
+                            <div class="col-sm-12"> \
+                                <div class="white-box" style="border: 1px solid #d3d1d1"> \
+                                    <div class="row "> \
+                                        <div class="col-lg-6">Rule # ' +data[i].rule_id+ '</div> \
+                                        <div class="col-lg-6 text-right"> \
+                                            <button class="btn btn-primary" onClick="editCompetitorRule('+data[i].rule_id+')">Edit</button> \
+                                            <button class="btn btn-warning" onClick="delete_rule('+data[i].rule_id+')">Delete</button> \
+                                        </div> \
+                                    </div> \
+                                    <hr> \
+                                        <div class="row"> \
+                            <div class="form-group col-4 co l-md-4"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" disabled type="text" value="My Price Should Be"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-2 col-md-2"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" type="text" disabled value="'+data[i].check_price+'"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-2 col-md-2"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" type="text" disabled value="'+data[i].check_price_unit+'"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-4 col-md-4"> \
+                                  <div class="input-group"> \
+                                    <input class="form-control" type="text" disabled value="'+data[i].check_price_priority+'"> \
+                                </div> \
+                            </div> \
+                        </div> \
+                                        <div class="row"> \
+                            <div class="form-group col-4 col-md-4"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" disabled type="text" value="Than"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-2 col-md-2"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" disabled type="text" value="'+data[i].competitor_priority+'"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-2 col-md-2"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" disabled type="text" value="OF"> \
+                                </div> \
+                            </div> \
+                            <div class="form-group col-4 col-md-4"> \
+                                <div class="input-group"> \
+                                    <input class="form-control" disabled type="text" value="'+data[i].competitor+'"> \
+                                </div> \
+                            </div> \
+                                        </div> \
+                                        <div class="row"> \
+                                            <div class="form-group col-4 col-md-4"> \
+                                                <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" value="but it should not be lower than my final cost +"> \
+                                                </div> \
+                                            </div> \
+                                            <div class="form-group col-2 col-md-2"> \
+                                                <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" value="'+data[i].final_price_check+'"> \
+                                                </div> \
+                                            </div> \
+                                            <div class="form-group col-2 col-md-2"> \
+                                                   <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" value="'+data[i].final_price_unit+'"> \
+                                                </div> \
+                                            </div> \
+                                            <div class="form-group col-4 col-md-4"> \
+                                            </div> \
+                                        </div> \
+                                        <div class="row"> \
+                                            <div class="form-group col-4 col-md-4"> \
+                                                <h5 class="m-t-30 m-b-10">Supplier</h5> \
+                                                <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" value="' + data[i].supplier + '"> \
+                                                </div> \
+                                            </div> \
+                                            <div class="form-group col-4 col-md-4"> \
+                                                <h5 class="m-t-30 m-b-10">Association With</h5> \
+                                                <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" \
+                                                           value="' + (data[i].is_category == true ? 'With Category': 'With Product') +'"> \
+                                                </div> \
+                                            </div> \
+                                            <div class="form-group col-4 col-md-4"> \
+                                                <h5 class="m-t-30 m-b-10">' + (data[i].is_category == true ? 'Category' : 'Product') +'</h5> \
+                                                <div class="input-group"> \
+                                                    <input class="form-control" disabled type="text" \
+                                                           value="' + (data[i].is_category == true ? data[i].category : data[i].product) +'"> \
+                                                </div> \
+                                            </div> \
+                                        </div> \
+                                </div> \
+                            </div> \
+                        </div> \
+                    ');
+                };
+
+                let length = ($('.competitors_main_row .competitor_rows').length).toString();
+                if (length == 0 )
+                {
+                    $('.competitors_main_row').append('<div class="row competitor_rows">\
+                        <div class="col-sm-12">\
+                            <div class="white-box">\
+                                <div class="row">\
+                                    No Record Found\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </div>');
+                }
+            });
+        };
+
+        function editCompetitorRule(rule_id){
+            url = '/app/get_rule_detail?rule_id=' + rule_id;
+            $.get(url,
+              function(data, status){
+                document.getElementById('competitor_price').value = data.check_price;
+                document.getElementById('competitor_price_type').value = data.check_price_unit_int;
+                document.getElementById('competitor_price_first_priority').value = data.check_price_priority_int;
+                document.getElementById('competitor_price_second_priority').value = data.competitor_priority_int;
+                document.getElementById('competitor_competitor_select').value = data.competitor_int;
+                document.getElementById('competitor_cost').value = data.final_price_check;
+                document.getElementById('competitor_cost_type').value = data.final_price_unit_int;
+                document.getElementById('rule_identity').value = data.rule_id;
+            });
+            $('#competitorviewerpopupedit').modal('show');
+        }
+
+        function submitCompetitorRule(){
+            competitor_price = document.getElementById('competitor_price').value;
+            competitor_price_type = document.getElementById('competitor_price_type').value;
+            competitor_price_first_priority = document.getElementById('competitor_price_first_priority').value;
+            competitor_price_second_priority = document.getElementById('competitor_price_second_priority').value;
+            competitor_competitor_select = document.getElementById('competitor_competitor_select').value;
+            competitor_cost = document.getElementById('competitor_cost').value;
+            competitor_cost_type = document.getElementById('competitor_cost_type').value;
+            rule_identity = document.getElementById('rule_identity').value;
+
+            bool_check = true;
+
+            if (competitor_price == ""){
+                bool_check = false;
+            }
+            if (competitor_cost == ""){
+                bool_check = false;
+            }
+
+            if (bool_check == true){
+                $.post("{% url 'products:edit_rule' %}",
+                    {
+                        competitor_price: competitor_price,
+                        competitor_price_type: competitor_price_type,
+                        competitor_price_first_priority: competitor_price_first_priority,
+                        competitor_price_second_priority: competitor_price_second_priority,
+                        competitor_competitor_select: competitor_competitor_select,
+                        competitor_cost: competitor_cost,
+                        competitor_cost_type: competitor_cost_type,
+                        rule_identity: rule_identity,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                  function(data, status){
+                    alert("edited");
+                    $('#competitorviewerpopupedit').modal('toggle');
+                    competitor_filter();
+                });
+            }
+        }
+
+
+
+    </script>
+
+</div>
+
+
+{% else %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                Please add Competitor Rule to view this Information.
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

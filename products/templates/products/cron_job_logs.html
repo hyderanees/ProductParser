@@ -1,0 +1,200 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block stylesheet %}
+button.dt-button, div.dt-button, a.dt-button {
+background: #03a9f3 !important;
+color: #ffffff !important;
+border-color: #03a9f3 !important;
+
+#dataTable tr td:nth-child(3){
+word-wrap: break-word;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+min-width: 50px !important;
+max-width: 50px !important;
+}
+
+{% endblock %}
+{% block bodyblock %}
+<style>
+
+
+#dataTable tr td:nth-child(3){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+
+#dataTable tr td:nth-child(4){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 300px !important;
+}
+
+
+#dataTable tr td:nth-child(5){
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px !important;
+    max-width: 80px !important;
+}
+
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h3 class="box-title m-b-0">All Cron Logs</h3>
+            <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+            <div class="table-responsive">
+
+
+                <table id="dataTable" class="display nowrap competitorsList" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Sr #.</th>
+                        <th>Job Name</th>
+                        <th>Started At</th>
+                        <th>Actions</th>
+                        <th>Scanned SKU's</th>
+                        <th>Changed Count</th>
+                        <th>New SKU</th>
+                        <th>Report</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Sr #.</th>
+                        <th>Job Name</th>
+                        <th>Started At</th>
+                        <th>Actions</th>
+                        <th>Scanned SKU's</th>
+                        <th>Changed Count</th>
+                        <th>New SKU</th>
+                        <th>Report</th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #page-wrapper{
+        width: 100% !important;
+    }
+    .competitorsList.dataTable td {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList.dataTable th {
+        padding: 3px 5px!important;
+        font-size: 13px!important;
+    }
+    .competitorsList .sorting_1{
+        background-color: #ffffff!important;
+    }
+    .competitorsList .odd{
+        background-color: #ffffff!important;
+    }
+    .competitorsList tbody tr:hover {
+        background-color: #ffffff!important;
+    }
+    .competitorsList .divider {
+        background-color: #EDF1F5!important;
+    }
+    .competitorsList .colorRed {
+        color: #ff0000!important;
+    }
+    .competitorsList .colorRedNoStock {
+        color: #f0000b !important;
+    }
+    .competitorsList .colorDark {
+        color: #cccccc!important;
+    }
+    .competitorsList .colorGreen {
+        color: #298029!important;
+    }
+    .competitorsList .colorGreenBackground {
+        background: #298029!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .competitorsList .colorRedBackground {
+        background: #ff0000!important;
+        color: white!important;
+        font-weight:600!important;
+    }
+    .dt-buttons {
+        float: right !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+
+
+<script>
+    getTableData();
+    function getTableData(){
+        $('#dataTable').dataTable().fnClearTable();
+        $('#dataTable').dataTable().fnDestroy();
+        $('#dataTable').DataTable({
+            dom: '<"top"B>rt<"bottom"lp><"clear">'
+            , buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[100, 200, 300, 500], [100, 200, 300, 500]],
+            "processing": true,
+            serverSide: true,
+            ajax: {
+                url: '/app/job_logs',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "sr_no", "orderable": false},
+                { "data": "job_name", "orderable": false },
+                { "data": "started_at", "orderable": false },
+                { "data": "action", "orderable": false },
+                { "data": "scanned_sku", "orderable": false },
+                { "data": "changed_prices", "orderable": false },
+                { "data": "new_sku", "orderable": false },
+                { "data": "report", "orderable": false }
+            ]
+        });
+    };
+</script>
+
+
+{% endblock %}

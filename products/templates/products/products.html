@@ -1,0 +1,131 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block style_cdn_links %}
+<link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet"
+      type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block stylesheet %}
+
+    button.dt-button, div.dt-button, a.dt-button {
+        background: #03a9f3 !important;
+        color: #ffffff !important;
+        border-color: #03a9f3 !important;
+    }
+    #dataTable tr td:nth-child(2){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 100px !important;
+        max-width: 100px !important;
+    }
+    #dataTable tr td:nth-child(7){
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 100px !important;
+        max-width: 100px !important;
+    }
+
+{% endblock %}
+{% block bodyblock %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-lg-6"><h3 class="box-title m-b-0">All Products</h3></div>
+                <div class="col-lg-6 text-right">
+                    <a class="btn btn-primary" href="/app/products/upload_products">Upload Products</a>
+                    <a class="btn btn-primary" href="/app/products/upload_product_competitors">Upload Product Comptetitors</a>
+                </div>
+                </div>
+            <p class="text-muted m-b-30">Export data to Copy, CSV, Excel, PDF & Print</p>
+            <div class="table-responsive">
+                <table id="dataTable" class="display nowrap" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Sr #.</th>
+                        <th>Name</th>
+                        <th>Sku</th>
+                        <th>Reference id</th>
+                        <th>Price</th>
+                        <th>Cost</th>
+                        <th>Categories</th>
+                        <th>Brand</th>
+                        <th>Supplier</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Sr #.</th>
+                        <th>Name</th>
+                        <th>Sku</th>
+                        <th>Reference id</th>
+                        <th>Price</th>
+                        <th>Cost</th>
+                        <th>Categories</th>
+                        <th>Brand</th>
+                        <th>Supplier</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+<!-- start - This is for export functionality only -->
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+<!-- end - This is for export functionality only -->
+<script>
+        $('#dataTable').DataTable({
+            dom: '<"top"Bf>rt<"bottom"lp><"clear">',
+            buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+            "processing": true,
+            serverSide: true,
+            ajax: {
+                url: '{% url 'products:products' %}',
+                data: function ( d ) {
+                    d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                },
+                type: 'POST'
+            },
+            "columns": [
+                { "data": "sr_no", "orderable": false
+                },
+                { "data": "name", "orderable": false
+                },
+                { "data": "sku", "orderable": false },
+                { "data": "reference_id", "orderable": false,
+                    "render": function ( data )
+                    {
+                        return '<a href="/app/products/detail/'+data+'/">'+data+'</a>';
+                    }
+                },
+                { "data": "price", "orderable": false },
+                { "data": "cost", "orderable": false },
+                { "data": "categories", "orderable": false },
+                { "data": "brand", "orderable": false },
+                { "data": "supplier", "orderable": false }
+            ]
+        });
+
+
+</script>
+{% endblock %}
